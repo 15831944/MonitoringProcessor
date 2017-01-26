@@ -1,0 +1,17 @@
+StationSynopticIndex:	31977
+StationLongitude:	132.03
+StationLattitude:	43.16
+StationHeightAboveSeaLevel:	90
+RadarAboveStationExeeding:	0
+OnGroundPressure:	1021.8
+OnGroundWindDirection:	360
+OnGroundWindVelocity:	02
+OnGroundHumidityError:	0.0
+OnGroundTemperatureError:	0.0
+StartYear:	2016
+StartMonth:	11
+StartDay:	5
+StartHour:	23
+StartMinute:	31
+NebulosityCode:	00900
+RadioZondType:	89
