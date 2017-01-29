@@ -37,9 +37,9 @@ std::string join_path(const std::vector<std::string> &parts)
 {
     std::string joined;
     std::size_t i = 0;
-    for(auto part=parts.begin();part!=parts.end(); part++)
+    for(auto part : parts)
     {
-        joined.append(*part);
+        joined.append(part);
         
         if(i++ != parts.size() - 1)
         {
@@ -298,13 +298,13 @@ void zip_file::save(std::vector<unsigned char> &bytes)
 
 void zip_file::append_comment()
 {
-   /* if(!comment.empty())
+    if(!comment.empty())
     {
         auto comment_length = std::min(static_cast<uint16_t>(comment.length()), std::numeric_limits<uint16_t>::max());
         buffer_[buffer_.size() - 2] = static_cast<char>(comment_length);
         buffer_[buffer_.size() - 1] = static_cast<char>(comment_length >> 8);
         std::copy(comment.begin(), comment.end(), std::back_inserter(buffer_));
-    }*/
+    }
 }
 
 void zip_file::remove_comment()
