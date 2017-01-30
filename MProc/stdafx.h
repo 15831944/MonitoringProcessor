@@ -18,5 +18,6 @@
 using namespace std;
 
 static std::string formats[N] = { ".AB..GROUND", ".crd", ".GROUND", ".info", ".KN04", ".KN4", ".LAYERS", ".prof", ".prof.1", ".RAW", ".SP", ".TAE03", ".TAE3", ".tu" };
-
+static std::string radar1[N] = { "A", "R", "W" };
+static std::string radar2[N] = { "A", "Œ", "W" };
 // TODO: reference additional headers your program requires here
