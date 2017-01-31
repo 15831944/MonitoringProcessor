@@ -21,7 +21,9 @@
 
 using namespace std;
 
+#define NUMRADARS 3
+
 static std::string formats[N] = { ".AB..GROUND", ".crd", ".GROUND", ".info", ".KN04", ".KN4", ".LAYERS", ".prof", ".prof.1", ".RAW", ".SP", ".TAE03", ".TAE3", ".tu" };
-static std::string radar1[N] = { "A", "R", "V" };
-static std::string radar2[N] = { "A", "Œ", "V" };
+static std::string radar1[NUMRADARS] = { "A", "R", "V" };
+static std::string radar2[NUMRADARS] = { "A.zip", "R.zip", "V.zip" };
 // TODO: reference additional headers your program requires here

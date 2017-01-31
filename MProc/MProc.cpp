@@ -148,7 +148,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		for (i = 1; i != 4; i++)
 			recognizeToken(string(argv[i]));
 
-		ss << s_year << '/' << s_station_index << '/' << s_station_index << '-' << s_year << s_month << radar1[radar] << ".zip";
+		ss << s_year << '/' << s_station_index << '/' << s_station_index << '-' << s_year << s_month;// << radar1[radar] << ".zip";
 		infile = ss.str();
 		oss = std::istringstream(argv[1]);
 		oss >> year;
@@ -176,106 +176,119 @@ int _tmain(int argc, _TCHAR* argv[])
 	//ss << radar2[radar] << '/' << s_month << '/' << day << '.' << month << '.' << year;//<< "-11.30";
 	//string morningstr = ss.str() + "-11.30";
 	//string nightstr = ss.str() + "-23.35";
+
 	string morningstr;
 	string nightstr;
 	try
 	{
-		zip_file file(infile);
-		string base = file.get_first_filename();
-		base = base.substr(0,base.find_last_of('/'));
-		ss << base << '/' << day << '.' << month << '.' << year;
-		//base = ss.str();
-
-		for (day = 1; day != daysInMonth(month); day++)
+		//TODO CHECK DATA ALREADY EXISTS!!!
+		for (radar = 0; radar != NUMRADARS; radar++)
 		{
-			Sounding s;
-			ss.clear();
-			ss = stringstream();
-			ss << base << '/' << day << '.' << month << '.' << year;// << "-11.30";
-			morningstr = ss.str();
-			ss.clear();
-			ss = stringstream();
-			ss << base << '/' << day << '.' << month << '.' << year;// << "-23.35";
-			nightstr = ss.str();
-			//file.printdir();
-			//file.read("25703-201609R/9Œ/9.9.2016-11.30.RAW");
-			cout << morningstr << endl;
-			for (i = 0; i != N; i++)
+			try
 			{
-				s.setDayOrNight(0);
-				try
+				zip_file file(infile + radar2[radar]);
+				string base = file.get_first_filename();
+				base = base.substr(0, base.find_last_of('/'));
+				ss << base << '/' << day << '.' << month << '.' << year;
+				//base = ss.str();
+
+				for (day = 1; day != daysInMonth(month); day++)
 				{
-					//file.read("25703-201609R/9.9.2016-11.30.RAW");
-					data = readFormat(file, morningstr, 0, formats[i]);//file.read(morningstr + formats[i]);
-					datam[i] = data;
-					s.addData(data, formats[i]);
+					Sounding s;
+					ss.clear();
+					ss = stringstream();
+					ss << base << '/' << day << '.' << month << '.' << year;// << "-11.30";
+					morningstr = ss.str();
+					ss.clear();
+					ss = stringstream();
+					ss << base << '/' << day << '.' << month << '.' << year;// << "-23.35";
+					nightstr = ss.str();
+					//file.printdir();
+					//file.read("25703-201609R/9Œ/9.9.2016-11.30.RAW");
+					cout << morningstr << endl;
+					for (i = 0; i != N; i++)
+					{
+						s.setDayOrNight(0);
+						try
+						{
+							//file.read("25703-201609R/9.9.2016-11.30.RAW");
+							data = readFormat(file, morningstr, 0, formats[i]);//file.read(morningstr + formats[i]);
+							datam[i] = data;
+							s.addData(data, formats[i]);
+						}
+						catch (...)
+						{
+							cout << "#2 Error reading format " << formats[i] << endl;
+							datam[i] = "";
+							s.addData("", formats[i]);
+						}
+						s.setDayOrNight(1);
+						try
+						{
+							data = readFormat(file, nightstr, 1, formats[i]);
+							datan[i] = data;
+							s.addData(data, formats[i]);
+						}
+						catch (...)
+						{
+							cout << "#3 Error reading format " << formats[i] << endl;
+							datan[i] = "";
+							s.addData("", formats[i]);
+						}
+					}
+					s.setDayOrNight(0);
+					s.processRAWFile();
+					//yyyy.mm.dd hh:mm
+					LaunchTime lt;
+					lt.tm_year = year;
+					lt.tm_mon = month;
+					lt.tm_day = day;
+					lt.tm_hour = 11;
+					lt.tm_min = 30;// morning_min;
+					LaunchParameters l;
+					l.radarCode = radar1[radar];
+					l.params.push_back((double)s.getRAWSoundingTime());
+					l.params.push_back((double)s.getMaxAltitude());
+					csvw.addLaunch(0, lt, l);
+
+					cout << "-----------------------------------\n SUMMARY INFORMATION MORNING" << endl;
+					cout << "Formats " << s.checkFormats() << " of 14" << endl;
+					cout << "Sounding time(CRD) " << s.getSoundingTime() << endl;
+					cout << "Sounding time(RAW) " << s.getRAWSoundingTime() << endl;
+					cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;
+					s.setDayOrNight(1);
+					s.processRAWFile();
+
+					LaunchTime lt2;
+					lt2.tm_year = year;
+					lt2.tm_mon = month;
+					lt2.tm_day = day;
+					lt2.tm_hour = 23;
+					lt2.tm_min = 30;//night_min;
+					l = LaunchParameters();
+					//l.radarCode = radar1[radar];
+					l.params.push_back((double)s.getRAWSoundingTime());
+					l.params.push_back((double)s.getMaxAltitude());
+					csvw.addLaunch(1, lt2, l);
+
+					cout << "-----------------------------------\n SUMMARY INFORMATION NIGHT" << endl;
+					cout << "Formats " << s.checkFormats() << " of 14" << endl;
+					cout << "Sounding time(CRD) " << s.getSoundingTime() << endl;
+					cout << "Sounding time(RAW) " << s.getRAWSoundingTime() << endl;
+					cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;
 				}
-				catch (...)
-				{
-					cout << "#2 Error reading format " << formats[i] << endl;
-					datam[i] = "";
-					s.addData("", formats[i]);
-				}
-				s.setDayOrNight(1);
-				try
-				{
-					data = readFormat(file, nightstr, 1, formats[i]);
-					datan[i] = data;
-					s.addData(data, formats[i]);
-				}
-				catch (...)
-				{
-					cout << "#3 Error reading format " << formats[i] << endl;
-					datan[i] = "";
-					s.addData("", formats[i]);
-				}
+
 			}
-			s.setDayOrNight(0);
-			s.processRAWFile();
-			//yyyy.mm.dd hh:mm
-			LaunchTime lt;
-			lt.tm_year = year;
-			lt.tm_mon = month;
-			lt.tm_day = day;
-			lt.tm_hour = 11;
-			lt.tm_min = 30;// morning_min;
-			LaunchParameters l;
-			l.radarCode = radar1[radar];
-			l.params.push_back((double)s.getRAWSoundingTime());
-			l.params.push_back((double)s.getMaxAltitude());
-			csvw.addLaunch(0,lt, l);
-
-			cout << "-----------------------------------\n SUMMARY INFORMATION MORNING" << endl;
-			cout << "Formats " << s.checkFormats() << " of 14" << endl;
-			cout << "Sounding time(CRD) " << s.getSoundingTime() << endl;
-			cout << "Sounding time(RAW) " << s.getRAWSoundingTime() << endl;
-			cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;
-			s.setDayOrNight(1);
-			s.processRAWFile();
-
-			LaunchTime lt2;
-			lt2.tm_year = year;
-			lt2.tm_mon = month;
-			lt2.tm_day = day;
-			lt2.tm_hour = 23;
-			lt2.tm_min = 30;//night_min;
-			l = LaunchParameters();
-			//l.radarCode = radar1[radar];
-			l.params.push_back((double)s.getRAWSoundingTime());
-			l.params.push_back((double)s.getMaxAltitude());
-			csvw.addLaunch(1,lt2, l);
-
-			cout << "-----------------------------------\n SUMMARY INFORMATION NIGHT" << endl;
-			cout << "Formats " << s.checkFormats() << " of 14" << endl;
-			cout << "Sounding time(CRD) " << s.getSoundingTime() << endl;
-			cout << "Sounding time(RAW) " << s.getRAWSoundingTime() << endl;
-			cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;
+			catch (...)
+			{
+				cout << "#1 Error reading file " << infile + radar2[radar] << endl;
+			}
 		}
 		csvw.writeCSV("result.csv");
 	}
 	catch (...)
 	{
-		cout << "#1 Error reading file " << infile << endl;
+		cout << "#4 Unknown error " << infile + radar2[radar] << endl;
 	}
 	system("pause");
 	return 0;
