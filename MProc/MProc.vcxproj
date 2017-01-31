@@ -85,6 +85,9 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CSVWorker.h" />
+    <ClInclude Include="LaunchParameters.h" />
+    <ClInclude Include="minicsv.h" />
     <ClInclude Include="miniz.h" />
     <ClInclude Include="RAWData.h" />
     <ClInclude Include="Sounding.h" />
@@ -93,6 +96,7 @@
     <ClInclude Include="zip_file.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CSVWorker.cpp" />
     <ClCompile Include="miniz.c" />
     <ClCompile Include="MProc.cpp" />
     <ClCompile Include="Sounding.cpp" />

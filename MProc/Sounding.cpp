@@ -89,36 +89,44 @@ int Sounding::getSoundingTime()
 void Sounding::processRAWFile()
 {
 	string rawFile = getRAWfile();
-	if (rawFile.length() > 0)
+	try
 	{
-		/*
-		хяундмше дюммше гнмдхпнбюмхъ гю 05.11.2016 11:30
-опхгелмши береп (D V) :  22  6
-опхгелмне дюбкемхе : 1011.0
-пюяонкнфемхе ярюмжхх : 
-    ьхпнрю :  43 днкцнрю : 132
-    бшянрю мюд спнбмел лнпъ :    90
-яхмнорхвеяйхи хмдейя ярюмжхх : 31977
-йнд накювмнярх : 
-бпел     H      D      E      A     T  U
-		*/
-		int newl = rawFile.find('\n');
-		for (int i = 0; i != 9; i++)
+		if (rawFile.length() > 0)
 		{
-			newl = rawFile.find('\n',newl)+1;
-		}
+			/*
+			хяундмше дюммше гнмдхпнбюмхъ гю 05.11.2016 11:30
+			опхгелмши береп (D V) :  22  6
+			опхгелмне дюбкемхе : 1011.0
+			пюяонкнфемхе ярюмжхх :
+			ьхпнрю :  43 днкцнрю : 132
+			бшянрю мюд спнбмел лнпъ :    90
+			яхмнорхвеяйхи хмдейя ярюмжхх : 31977
+			йнд накювмнярх :
+			бпел     H      D      E      A     T  U
+			*/
+			unsigned int newl = rawFile.find('\n');
+			for (int i = 0; i != 9; i++)
+			{
+				newl = rawFile.find('\n', newl) + 1;
+			}
 
-		while (newl < rawFile.length())
-		{
-			string last_str = rawFile.substr(newl, rawFile.find('\n', newl) - newl);
-			if (!dayornight)
-				rDaM.addString(last_str);
-			else
-				rDaN.addString(last_str);
-			newl = rawFile.find('\n', newl) + 1;
+			while (newl < rawFile.length())
+			{
+				string last_str = rawFile.substr(newl, rawFile.find('\n', newl) - newl);
+				if (!dayornight)
+					rDaM.addString(last_str);
+				else
+					rDaN.addString(last_str);
+				newl = rawFile.find('\n', newl) + 1;
+			}
+
 		}
+	}
+	catch (...)
+	{
 
 	}
+	
 }
 
 int Sounding::getRAWSoundingTime()

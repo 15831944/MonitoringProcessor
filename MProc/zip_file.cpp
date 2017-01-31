@@ -621,6 +621,12 @@ std::vector<std::string> zip_file::namelist()
     return names;
 }
 
+std::string zip_file::get_first_filename()
+{
+	std::vector<std::string> names = namelist();
+	return names[4]; /* Folders x 3 + 1 file*/
+}
+
 std::ostream &zip_file::open(const std::string &name)
 {
     return open(getinfo(name));
