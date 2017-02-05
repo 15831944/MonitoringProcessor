@@ -9,11 +9,13 @@ class Sounding
 public:
 	Sounding()
 	{
+		mRawData = ".RAW";
 	};
 	~Sounding()
 	{
 	};
 	
+	void setRAWDataIdentifier(string rdata);
 	void setDayOrNight(char dayornight);
 	void addData(string data, string format);
 	bool hasFormat(string format);
@@ -27,6 +29,7 @@ private:
 	RAWData rDaM;  /*morning*/
 	RAWData rDaN; /* night */
 	int dayornight;
+	string mRawData;
 	string getRAWfile();
 	string getCRDfile();
 	map<string, string> mDataDay;

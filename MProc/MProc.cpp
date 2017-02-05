@@ -99,6 +99,7 @@ int _tmain(int argc, _TCHAR* argv[])
 	int i;
 	int mode=1;
 	int radar = 1;
+	//TODO ADD pre-load CSV
 	CSVWorker csvw;
 	day = 1;
 
@@ -110,6 +111,7 @@ int _tmain(int argc, _TCHAR* argv[])
     }
 
 	string infile;
+	string outfile;
 	stringstream ss;
 	std::istringstream oss;
 	size_t pos;
@@ -177,11 +179,17 @@ int _tmain(int argc, _TCHAR* argv[])
 	//string morningstr = ss.str() + "-11.30";
 	//string nightstr = ss.str() + "-23.35";
 
+	ss.clear();
+	ss = stringstream();
+	ss << s_station_index << '-' << s_year << s_month<<".csv";
+	outfile = ss.str();
+
 	string morningstr;
 	string nightstr;
 	try
 	{
-		//TODO CHECK DATA ALREADY EXISTS!!!
+		//TODO CHECK DATA ALREADY EXISTS!!! - OK
+		csvw.readCSV(outfile);
 		for (radar = 0; radar != NUMRADARS; radar++)
 		{
 			try
@@ -192,9 +200,10 @@ int _tmain(int argc, _TCHAR* argv[])
 				ss << base << '/' << day << '.' << month << '.' << year;
 				//base = ss.str();
 
-				for (day = 1; day != daysInMonth(month); day++)
+				for (day = 1; day <= daysInMonth(month); day++)
 				{
 					Sounding s;
+					s.setRAWDataIdentifier(raw_radar[radar]);
 					ss.clear();
 					ss = stringstream();
 					ss << base << '/' << day << '.' << month << '.' << year;// << "-11.30";
@@ -247,9 +256,13 @@ int _tmain(int argc, _TCHAR* argv[])
 					lt.tm_min = 30;// morning_min;
 					LaunchParameters l;
 					l.radarCode = radar1[radar];
+					int t1 = s.getRAWSoundingTime();
+					int t2 = s.getSoundingTime();
 					l.params.push_back((double)s.getRAWSoundingTime());
 					l.params.push_back((double)s.getMaxAltitude());
-					csvw.addLaunch(0, lt, l);
+
+					if (t1||t2)
+						csvw.addLaunch(0, lt, l);
 
 					cout << "-----------------------------------\n SUMMARY INFORMATION MORNING" << endl;
 					cout << "Formats " << s.checkFormats() << " of 14" << endl;
@@ -266,10 +279,14 @@ int _tmain(int argc, _TCHAR* argv[])
 					lt2.tm_hour = 23;
 					lt2.tm_min = 30;//night_min;
 					l = LaunchParameters();
-					//l.radarCode = radar1[radar];
+					l.radarCode = radar1[radar];
+					t1 = s.getRAWSoundingTime();
+					t2 = s.getSoundingTime();
 					l.params.push_back((double)s.getRAWSoundingTime());
 					l.params.push_back((double)s.getMaxAltitude());
-					csvw.addLaunch(1, lt2, l);
+					
+					if (t1 || t2)
+						csvw.addLaunch(1, lt2, l);
 
 					cout << "-----------------------------------\n SUMMARY INFORMATION NIGHT" << endl;
 					cout << "Formats " << s.checkFormats() << " of 14" << endl;
@@ -284,7 +301,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				cout << "#1 Error reading file " << infile + radar2[radar] << endl;
 			}
 		}
-		csvw.writeCSV("result.csv");
+		csvw.writeCSV(outfile);
 	}
 	catch (...)
 	{

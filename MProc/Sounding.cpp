@@ -54,6 +54,11 @@ void Sounding::setDayOrNight(char don)
 	dayornight=don;
 }
 
+void Sounding::setRAWDataIdentifier(string rdata)
+{
+	mRawData = rdata;
+}
+
 string Sounding::getCRDfile()
 {
 	if (hasFormat(".crd"))
@@ -65,9 +70,9 @@ string Sounding::getCRDfile()
 
 string Sounding::getRAWfile()
 {
-	if (hasFormat(".RAW"))
+	if (hasFormat(mRawData))
 	{
-		return getFormat(".RAW");
+		return getFormat(mRawData);
 	}
 	return "";
 }
