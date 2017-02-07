@@ -64,6 +64,31 @@ string readFormat(zip_file &file, string base, int dayornight, string format)
 
 			}
 	}
+	//Vector-M radar
+	for (int i = 30; i != 60; i++)
+	{
+		if (!dayornight)
+		{
+			sprintf_s(prefix, "-11%02d%s", i, format.c_str());
+			morning_min = i;
+		}
+		else
+		{
+			sprintf_s(prefix, "-23%02d%s", i, format.c_str());
+			night_min = i;
+		}
+
+		filename = base + string(prefix);
+		try
+		{
+			data = file.read(filename);
+			return data;
+		}
+		catch (...)
+		{
+
+		}
+	}
 	throw 1;
 }
 
@@ -206,12 +231,25 @@ int _tmain(int argc, _TCHAR* argv[])
 					s.setRAWDataIdentifier(raw_radar[radar]);
 					ss.clear();
 					ss = stringstream();
-					ss << base << '/' << day << '.' << month << '.' << year;// << "-11.30";
+
+					if (radar != 2)
+					{
+						ss << base << '/' << day << '.' << month << '.' << year;// << "-11.30";
+					}
+					else
+					{
+						char date[10];
+						sprintf_s(date, "%04d%02d%02d", year, month, day);
+						ss << base << '/' << string(date);
+					}
+
 					morningstr = ss.str();
-					ss.clear();
+					nightstr = morningstr;
+					/*ss.clear();
 					ss = stringstream();
 					ss << base << '/' << day << '.' << month << '.' << year;// << "-23.35";
-					nightstr = ss.str();
+					nightstr = ss.str();*/
+					
 					//file.printdir();
 					//file.read("25703-201609R/9Œ/9.9.2016-11.30.RAW");
 					cout << morningstr << endl;
