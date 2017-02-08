@@ -70,6 +70,10 @@ string Sounding::getCRDfile()
 
 string Sounding::getRAWfile()
 {
+	if (hasFormat(".RAW"))
+	{
+		return getFormat(".RAW");
+	}
 	if (hasFormat(mRawData))
 	{
 		return getFormat(mRawData);

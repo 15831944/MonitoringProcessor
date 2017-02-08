@@ -15,7 +15,8 @@ int station_index, year, month, day;
 int morning_min;
 int night_min;
 string s_station_index, s_year, s_month;
-
+string curdir="";
+string outdir="";
 
 int daysInMonth(int month)
 {
@@ -117,6 +118,14 @@ void recognizeToken(string arg)
 		s_station_index = arg.substr(arg.find('I') + 2, arg.length() - 2);
 		station_index = strToInt(s_station_index);
 	}
+	if (arg.find('R') != string::npos)
+	{
+		outdir = arg.substr(arg.find('S') + 2, arg.length() - 2);
+	}
+	if (arg.find('S') != string::npos)
+	{
+		curdir = arg.substr(arg.find('S') + 2, arg.length() - 2);
+	}
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -137,6 +146,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	string infile;
 	string outfile;
+	
 	stringstream ss;
 	std::istringstream oss;
 	size_t pos;
@@ -160,6 +170,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		oss >> month;
 		break;
 	case 4:
+	case 6:
 		/*ss << argv[1] << '/' << argv[2] << '/' << argv[2] << '-' << argv[1] << argv[3] << "A.zip";
 		infile = ss.str();
 		oss = std::istringstream(argv[1]);
@@ -172,7 +183,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		oss >> station_index;
 		oss.clear();*/
 
-		for (i = 1; i != 4; i++)
+		for (i = 1; i != argc; i++)
 			recognizeToken(string(argv[i]));
 
 		ss << s_year << '/' << s_station_index << '/' << s_station_index << '-' << s_year << s_month;// << radar1[radar] << ".zip";
@@ -186,6 +197,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		oss = std::istringstream(argv[2]);
 		oss >> station_index;
 		oss.clear();
+		
 		break;
 	default:
 		break;
@@ -207,7 +219,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	ss.clear();
 	ss = stringstream();
 	ss << s_station_index << '-' << s_year << s_month<<".csv";
-	outfile = ss.str();
+	outfile = outdir+ss.str();
+	infile = curdir + infile;
 
 	string morningstr;
 	string nightstr;
