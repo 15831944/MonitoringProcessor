@@ -68,7 +68,10 @@ void CSVWorker::writeCSV(string filename)
 				os << it;
 			}
 			os << NEWLINE;
-			lt = (*it2).first;
+			lt.tm_hour = 23;
+			lt.tm_min = 30;
+			//lt = (*it2).first;
+			it2 = monthDataNight
 			dateStr = lt.getAsString();
 			os << dateStr << (*it2).second.radarCode;
 			for (auto it : (*it2).second.params)
@@ -76,7 +79,7 @@ void CSVWorker::writeCSV(string filename)
 				os << it;
 			}
 			os << NEWLINE;
-			it2++;
+			//it2++;
 		}
 	}
 	os.flush();
