@@ -2,10 +2,28 @@
 
 void CSVWorker::addLaunch(int dayornight, LaunchTime lTime, LaunchParameters lParams)
 {
+	//TODO check LaunchTime exists +
+	//TODO check already loaded formats for any LaunchTime
+
+	if (hasLaunch(lTime))
+	{
+		LaunchParameters lp = monthDataDay[lTime];
+	}
+	
+
 	if (!dayornight)
 		monthDataDay[lTime] = lParams;
 	else
 		monthDataNight[lTime] = lParams;
+}
+
+bool CSVWorker::hasLaunch(LaunchTime lTime)
+{
+	if (monthDataDay[lTime].radarCode.length() > 0)
+		return true;
+	if (monthDataNight[lTime].radarCode.length() > 0)
+		return true;
+	return false;
 }
 
 void CSVWorker::readCSV(string filename)
@@ -24,7 +42,13 @@ void CSVWorker::readCSV(string filename)
 			csv::sep space(' ', "<space>");
 			csv::sep point('.', "<point>");
 			double data;
+			string s_data;
 			is >> datetime >> lp.radarCode;
+			for (unsigned char i = 0; i != NUMPARAMETERS_STR; i++)
+			{
+				is >> s_data;
+				lp.strparams.push_back(s_data);
+			}
 			for (unsigned char i = 0; i != NUMPARAMETERS; i++)
 			{
 				is >> data;

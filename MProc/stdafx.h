@@ -22,7 +22,8 @@
 using namespace std;
 
 #define NUMRADARS 3
-#define NUMPARAMETERS 2
+#define NUMPARAMETERS_STR 1
+#define NUMPARAMETERS 3
 
 static const std::string formats[N] = { ".AB..GROUND", ".crd", ".GROUND", ".info", ".KN04", ".KN4", ".LAYERS", ".prof", ".prof.1", ".RAW", ".SP", ".TAE03", ".TAE3", ".tu", ".RAWDATA" };
 static const std::string formats_sh[N] = { "AB", "CD", "GD", "IF", "K0", "K4", "LY", "PF", "P1", "RW", "SP", "T0", "T3", "tu", "RD" };
