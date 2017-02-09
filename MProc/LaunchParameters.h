@@ -40,6 +40,8 @@ public:
 struct LaunchParameters
 {
 	string radarCode;
+	string filesAvail;
+	vector<string> strparams;
 	vector<double> params;
 };
 

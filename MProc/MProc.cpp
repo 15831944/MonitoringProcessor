@@ -298,6 +298,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					}
 					s.setDayOrNight(0);
 					s.processRAWFile();
+					s.processKN04File();
 					//yyyy.mm.dd hh:mm
 					LaunchTime lt;
 					lt.tm_year = year;
@@ -307,11 +308,13 @@ int _tmain(int argc, _TCHAR* argv[])
 					lt.tm_min = 30;// morning_min;
 					LaunchParameters l;
 					l.radarCode = radar1[radar];
+					//l.filesAvail = s.getFormatsTelegram();
+					l.strparams.push_back(s.getFormatsTelegram());
 					int t1 = s.getRAWSoundingTime();
 					int t2 = s.getSoundingTime();
 					l.params.push_back((double)s.getRAWSoundingTime());
 					l.params.push_back((double)s.getMaxAltitude());
-
+					l.params.push_back((double)s.getKN04Code());
 					if (t1||t2)
 						csvw.addLaunch(0, lt, l);
 
@@ -322,7 +325,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;
 					s.setDayOrNight(1);
 					s.processRAWFile();
-
+					s.processKN04File();
 					LaunchTime lt2;
 					lt2.tm_year = year;
 					lt2.tm_mon = month;
@@ -331,11 +334,13 @@ int _tmain(int argc, _TCHAR* argv[])
 					lt2.tm_min = 30;//night_min;
 					l = LaunchParameters();
 					l.radarCode = radar1[radar];
+					//l.filesAvail = s.getFormatsTelegram();
+					l.strparams.push_back(s.getFormatsTelegram());
 					t1 = s.getRAWSoundingTime();
 					t2 = s.getSoundingTime();
 					l.params.push_back((double)s.getRAWSoundingTime());
 					l.params.push_back((double)s.getMaxAltitude());
-					
+					l.params.push_back((double)s.getKN04Code());
 					if (t1 || t2)
 						csvw.addLaunch(1, lt2, l);
 

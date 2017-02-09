@@ -21,10 +21,13 @@ public:
 	bool hasFormat(string format);
 	string getFormat(string format);
 	int checkFormats();
+	string getFormatsTelegram();
 	int getSoundingTime();
 	int getRAWSoundingTime();
 	int getMaxAltitude();
+	int getKN04Code();
 	void processRAWFile();
+	void processKN04File();
 private:
 	RAWData rDaM;  /*morning*/
 	RAWData rDaN; /* night */
@@ -32,6 +35,9 @@ private:
 	string mRawData;
 	string getRAWfile();
 	string getCRDfile();
+	string getKN04file();
+	int KN04Code1;
+	int KN04Code2;
 	map<string, string> mDataDay;
 	map<string, string> mDataNight;
 };

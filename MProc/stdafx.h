@@ -24,9 +24,10 @@ using namespace std;
 #define NUMRADARS 3
 #define NUMPARAMETERS 2
 
-static std::string formats[N] = { ".AB..GROUND", ".crd", ".GROUND", ".info", ".KN04", ".KN4", ".LAYERS", ".prof", ".prof.1", ".RAW", ".SP", ".TAE03", ".TAE3", ".tu", ".RAWDATA" };
-static std::string radar1[NUMRADARS] = { "A", "R", "V" };
-static std::string radar2[NUMRADARS] = { "A.zip", "R.zip", "V.zip" };
-static std::string raw_radar[NUMRADARS] = { ".RAWDATA", ".RAW", ".RAW" };
-static std::string radar_name[NUMRADARS] = { "AVK", "MARL-A", "VECTOR" };
+static const std::string formats[N] = { ".AB..GROUND", ".crd", ".GROUND", ".info", ".KN04", ".KN4", ".LAYERS", ".prof", ".prof.1", ".RAW", ".SP", ".TAE03", ".TAE3", ".tu", ".RAWDATA" };
+static const std::string formats_sh[N] = { "AB", "CD", "GD", "IF", "K0", "K4", "LY", "PF", "P1", "RW", "SP", "T0", "T3", "tu", "RD" };
+static const std::string radar1[NUMRADARS] = { "A", "R", "V" };
+static const std::string radar2[NUMRADARS] = { "A.zip", "R.zip", "V.zip" };
+static const std::string raw_radar[NUMRADARS] = { ".RAWDATA", ".RAW", ".RAW" };
+static const std::string radar_name[NUMRADARS] = { "AVK", "MARL-A", "VECTOR" };
 // TODO: reference additional headers your program requires here

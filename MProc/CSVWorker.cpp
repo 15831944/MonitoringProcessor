@@ -66,6 +66,10 @@ void CSVWorker::writeLaunch(csv::ofstream &os, LaunchTime lt, LaunchParameters l
 {
 	string dateStr = lt.getAsString();
 	os << dateStr << lp.radarCode;
+	for (auto it : lp.strparams)
+	{
+		os << it;
+	}
 	for (auto it : lp.params)
 	{
 		os << it;
