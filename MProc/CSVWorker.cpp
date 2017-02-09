@@ -29,7 +29,7 @@ bool CSVWorker::hasLaunch(LaunchTime lTime)
 void CSVWorker::readCSV(string filename)
 {
 	csv::ifstream is(filename);
-	is.set_delimiter(',', "$$");
+	is.set_delimiter(';', "$$");
 	if (is.is_open())
 	{
 		while (is.read_line())
@@ -104,9 +104,10 @@ void CSVWorker::writeLaunch(csv::ofstream &os, LaunchTime lt, LaunchParameters l
 void CSVWorker::writeCSV(string filename)
 {
 	csv::ofstream os(filename);
-	os.set_delimiter(',', "$$");
+	os.set_delimiter(';', "$$");
 	if (os.is_open())
 	{
+		os << "YYYY.MM.DD hh:mm" << "RADAR" << "FMTS" << "TIME" << "H" << "KN04CODE"<<NEWLINE;
 		map<LaunchTime, LaunchParameters>::iterator it1 = monthDataDay.begin();
 		map<LaunchTime, LaunchParameters>::iterator it2 = monthDataNight.begin();
 		
