@@ -16,6 +16,8 @@ public:
 	};
 	void addLaunch(int dayornight,LaunchTime lTime, LaunchParameters lParams);
 	bool hasLaunch(int dayornight, LaunchTime lTime){ return false; }
+	LaunchParameters getLaunch(int dayornight, LaunchTime lTime);
+	void writeLaunch(csv::ofstream &os, LaunchTime lt, LaunchParameters lp);
 	void readCSV(string filename);
 	void writeCSV(string filename);
 private:

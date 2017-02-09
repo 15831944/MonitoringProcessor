@@ -22,6 +22,14 @@ public:
 	{
 		return (l.tm_day < r.tm_day);
 	}
+	friend bool operator>(const LaunchTime& l, const LaunchTime& r)
+	{
+		return (l.tm_day > r.tm_day);
+	}
+	friend bool operator==(const LaunchTime& l, const LaunchTime& r)
+	{
+		return (l.tm_day == r.tm_day);
+	}
 	int tm_min;   // minutes of hour from 0 to 59
 	int tm_hour;  // hours of day from 0 to 24
 	int tm_day;  // day of month from 1 to 31
