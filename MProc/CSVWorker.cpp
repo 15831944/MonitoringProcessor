@@ -50,15 +50,74 @@ LaunchTime CSVWorker::parseTime(string datetime)
 	return lt;
 }
 
+LaunchParameters CSVWorker::getLaunch(int dayornight, LaunchTime lTime)
+{
+	//DO NOT USE!!!!
+	LaunchParameters lp;
+	map<LaunchTime, LaunchParameters>::iterator i;
+	for (i = monthDataDay.begin(); i != monthDataDay.end(); i++)
+	{
+		//if ()
+	}
+	return lp;
+}
+
+void CSVWorker::writeLaunch(csv::ofstream &os, LaunchTime lt, LaunchParameters lp)
+{
+	string dateStr = lt.getAsString();
+	os << dateStr << lp.radarCode;
+	for (auto it : lp.params)
+	{
+		os << it;
+	}
+	os << NEWLINE;
+}
+
 void CSVWorker::writeCSV(string filename)
 {
 	csv::ofstream os(filename);
 	os.set_delimiter(',', "$$");
 	if (os.is_open())
 	{
-		map<LaunchTime, LaunchParameters>::iterator i;
+		map<LaunchTime, LaunchParameters>::iterator it1 = monthDataDay.begin();
 		map<LaunchTime, LaunchParameters>::iterator it2 = monthDataNight.begin();
-		for (i = monthDataDay.begin(); i != monthDataDay.end(); i++)
+		
+		while ((it1 != monthDataDay.end()) && (it2 != monthDataNight.end()))
+		{
+			if (((*it1).first < (*it2).first) || ((*it1).first == (*it2).first))
+			{
+				writeLaunch(os, (*it1).first, (*it1).second);
+				writeLaunch(os, (*it2).first, (*it2).second);
+				it1++;
+				it2++;
+				continue;
+			}
+			if (((*it1).first >(*it2).first))
+			{
+				writeLaunch(os, (*it2).first, (*it2).second);
+				writeLaunch(os, (*it1).first, (*it1).second);
+				it1++;
+				it2++;
+			}
+		}
+		if ((it1 == monthDataDay.end()) && (it2 != monthDataNight.end()))
+		{
+			while (it2 != monthDataNight.end())
+			{
+				writeLaunch(os, (*it2).first, (*it2).second);
+				it2++;
+			}
+		}
+		if ((it1 != monthDataDay.end()) && (it2 == monthDataNight.end()))
+		{
+			while (it1 != monthDataDay.end())
+			{
+				writeLaunch(os, (*it1).first, (*it1).second);
+				it1++;
+			}
+		}
+		
+		/*for (i = monthDataDay.begin(); i != monthDataDay.end(); i++)
 		{
 			LaunchTime lt = (*i).first;
 			string dateStr = lt.getAsString();
@@ -68,6 +127,7 @@ void CSVWorker::writeCSV(string filename)
 				os << it;
 			}
 			os << NEWLINE;
+			
 			lt = (*it2).first;
 			dateStr = lt.getAsString();
 			os << dateStr << (*it2).second.radarCode;
@@ -77,7 +137,7 @@ void CSVWorker::writeCSV(string filename)
 			}
 			os << NEWLINE;
 			it2++;
-		}
+		}*/
 	}
 	os.flush();
 }
