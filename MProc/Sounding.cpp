@@ -234,3 +234,42 @@ int Sounding::getMaxAltitude()
 	return 0;
 }
 
+int Sounding::getMaxDistance()
+{
+	if (!dayornight)
+	{
+		return (int)rDaM.getMaxDistance();
+	}
+	else
+	{
+		return (int)rDaN.getMaxDistance();
+	}
+	return 0;
+}
+
+float Sounding::getMinElevation()
+{
+	if (!dayornight)
+	{
+		return rDaM.getMinElevation();
+	}
+	else
+	{
+		return rDaN.getMinElevation();
+	}
+	return 0;
+}
+
+int Sounding::getAlt10Elevation()
+{
+	if (!dayornight)
+	{
+		return (int)rDaM.getAlt10Elevation();
+	}
+	else
+	{
+		return (int)rDaN.getAlt10Elevation();
+	}
+	return 0;
+}
+

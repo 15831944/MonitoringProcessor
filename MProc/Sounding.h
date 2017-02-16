@@ -25,7 +25,10 @@ public:
 	int getSoundingTime();
 	int getRAWSoundingTime();
 	int getMaxAltitude();
+	int getMaxDistance();
 	int getKN04Code();
+	float getMinElevation();
+	int getAlt10Elevation();
 	void processRAWFile();
 	void processKN04File();
 private:

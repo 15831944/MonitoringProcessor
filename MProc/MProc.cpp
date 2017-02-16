@@ -8,6 +8,7 @@
 #include "zip_file.hpp"
 #include "Sounding.h"
 #include "CSVWorker.h"
+#include "INIReader.h"
 
 using namespace std;
 
@@ -144,6 +145,14 @@ int _tmain(int argc, _TCHAR* argv[])
         return 0;
     }
 
+	INIReader reader("setup.ini");
+
+	if (reader.ParseError() < 0) {
+		std::cout << "Can't load 'setup.ini'\n";
+	}
+
+
+
 	string infile;
 	string outfile;
 	
@@ -227,7 +236,16 @@ int _tmain(int argc, _TCHAR* argv[])
 	try
 	{
 		//TODO CHECK DATA ALREADY EXISTS!!! - OK
-		csvw.readCSV(outfile);
+		try
+		{
+			csvw.readCSV(outfile);
+		}
+		catch (...)
+		{
+			ss << "ERROR Reading input file" << endl;
+		}
+
+		
 		for (radar = 0; radar != NUMRADARS; radar++)
 		{
 			try
@@ -296,34 +314,55 @@ int _tmain(int argc, _TCHAR* argv[])
 							s.addData("", formats[i]);
 						}
 					}
-					s.setDayOrNight(0);
-					s.processRAWFile();
-					s.processKN04File();
-					//yyyy.mm.dd hh:mm
-					LaunchTime lt;
-					lt.tm_year = year;
-					lt.tm_mon = month;
-					lt.tm_day = day;
-					lt.tm_hour = 11;
-					lt.tm_min = 30;// morning_min;
-					LaunchParameters l;
-					l.radarCode = radar1[radar];
-					//l.filesAvail = s.getFormatsTelegram();
-					l.strparams.push_back(s.getFormatsTelegram());
-					int t1 = s.getRAWSoundingTime();
-					int t2 = s.getSoundingTime();
-					l.params.push_back((double)s.getRAWSoundingTime());
-					l.params.push_back((double)s.getMaxAltitude());
-					l.params.push_back((double)s.getKN04Code());
-					if (t1||t2)
-						csvw.addLaunch(0, lt, l);
 
-					cout << "-----------------------------------\n SUMMARY INFORMATION MORNING" << endl;
-					cout << "Formats " << s.checkFormats() << " of 14" << endl;
-					cout << "Sounding time(CRD) " << s.getSoundingTime() << endl;
-					cout << "Sounding time(RAW) " << s.getRAWSoundingTime() << endl;
-					cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;
-					s.setDayOrNight(1);
+					for (int cnt = 0; cnt <= 1; cnt++)
+					{
+						s.setDayOrNight(cnt);
+						s.processRAWFile();
+						s.processKN04File();
+						//yyyy.mm.dd hh:mm
+						LaunchTime lt;
+						lt.tm_year = year;
+						lt.tm_mon = month;
+						lt.tm_day = day;
+
+						if (cnt == 0)
+						{
+							lt.tm_hour = 11;
+							lt.tm_min = 30;
+						}
+						else
+						{
+							lt.tm_hour = 23;
+							lt.tm_min = 30;
+						}
+						
+						LaunchParameters l;
+						l.radarCode = radar1[radar];
+						//l.filesAvail = s.getFormatsTelegram();
+						l.strparams.push_back(s.getFormatsTelegram());
+						int t1 = s.getRAWSoundingTime();
+						int t2 = s.getSoundingTime();
+						l.params.push_back((double)s.getRAWSoundingTime());
+						l.params.push_back((double)s.getMaxAltitude());
+						l.params.push_back((double)s.getKN04Code());
+						l.params.push_back((double)s.getMaxDistance());
+						l.params.push_back((double)s.getMinElevation());
+						l.params.push_back((double)s.getAlt10Elevation());
+						if (t1 || t2)
+							csvw.addLaunch(cnt, lt, l);
+
+						cout << "-----------------------------------\n SUMMARY INFORMATION"<< cnt << endl;
+						cout << "Formats " << s.checkFormats() << " of 14" << endl;
+						cout << "Sounding time(CRD) " << s.getSoundingTime() << endl;
+						cout << "Sounding time(RAW) " << s.getRAWSoundingTime() << endl;
+						cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;
+						cout << "Max distance(RAW) " << s.getMaxDistance() << endl;
+					}
+
+					
+					
+					/*s.setDayOrNight(1);
 					s.processRAWFile();
 					s.processKN04File();
 					LaunchTime lt2;
@@ -348,7 +387,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					cout << "Formats " << s.checkFormats() << " of 14" << endl;
 					cout << "Sounding time(CRD) " << s.getSoundingTime() << endl;
 					cout << "Sounding time(RAW) " << s.getRAWSoundingTime() << endl;
-					cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;
+					cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;*/
 				}
 
 			}

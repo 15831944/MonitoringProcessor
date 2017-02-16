@@ -32,6 +32,7 @@ void CSVWorker::readCSV(string filename)
 	is.set_delimiter(';', "$$");
 	if (is.is_open())
 	{
+		is.read_line(); //HEADER
 		while (is.read_line())
 		{
 			LaunchTime lt;
@@ -46,13 +47,28 @@ void CSVWorker::readCSV(string filename)
 			is >> datetime >> lp.radarCode;
 			for (unsigned char i = 0; i != NUMPARAMETERS_STR; i++)
 			{
-				is >> s_data;
-				lp.strparams.push_back(s_data);
+				try
+				{
+					is >> s_data;
+					lp.strparams.push_back(s_data);
+				}
+				catch (...)
+				{
+					//break; //OLD VERSION?
+				}
 			}
 			for (unsigned char i = 0; i != NUMPARAMETERS; i++)
 			{
-				is >> data;
-				lp.params.push_back(data);
+				try
+				{
+					is >> data;
+					lp.params.push_back(data);
+				}
+				catch (...)
+				{
+					//break; //OLD VERSION?
+				}
+				
 			}
 			try
 			{
@@ -64,6 +80,10 @@ void CSVWorker::readCSV(string filename)
 			else
 				monthDataNight[lt] = lp;
 		}
+	}
+	else
+	{
+		cout << "ERROR Opening CSV file." << endl;
 	}
 }
 
@@ -107,7 +127,7 @@ void CSVWorker::writeCSV(string filename)
 	os.set_delimiter(';', "$$");
 	if (os.is_open())
 	{
-		os << "YYYY.MM.DD hh:mm" << "RADAR" << "FMTS" << "TIME" << "H" << "KN04CODE"<<NEWLINE;
+		os << "YYYY.MM.DD hh:mm" << "RADAR" << "FMTS" << "TIME" << "H" << "KN04CODE" << "D"<<"MINEL"<<"A10EL" << NEWLINE;
 		map<LaunchTime, LaunchParameters>::iterator it1 = monthDataDay.begin();
 		map<LaunchTime, LaunchParameters>::iterator it2 = monthDataNight.begin();
 		
