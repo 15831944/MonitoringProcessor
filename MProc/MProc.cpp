@@ -8,6 +8,7 @@
 #include "zip_file.hpp"
 #include "Sounding.h"
 #include "CSVWorker.h"
+#include "INIReader.h"
 
 using namespace std;
 
@@ -15,7 +16,8 @@ int station_index, year, month, day;
 int morning_min;
 int night_min;
 string s_station_index, s_year, s_month;
-
+string curdir="";
+string outdir="";
 
 int daysInMonth(int month)
 {
@@ -117,6 +119,14 @@ void recognizeToken(string arg)
 		s_station_index = arg.substr(arg.find('I') + 2, arg.length() - 2);
 		station_index = strToInt(s_station_index);
 	}
+	if (arg.find('R') != string::npos)
+	{
+		outdir = arg.substr(arg.find('S') + 2, arg.length() - 2);
+	}
+	if (arg.find('S') != string::npos)
+	{
+		curdir = arg.substr(arg.find('S') + 2, arg.length() - 2);
+	}
 }
 
 int _tmain(int argc, _TCHAR* argv[])
@@ -124,9 +134,11 @@ int _tmain(int argc, _TCHAR* argv[])
 	int i;
 	int mode=1;
 	int radar = 1;
+	vector<bool> settings;
 	//TODO ADD pre-load CSV
 	CSVWorker csvw;
 	day = 1;
+	stringstream ss;
 
 	if(argc <= 1)
     {
@@ -135,9 +147,33 @@ int _tmain(int argc, _TCHAR* argv[])
         return 0;
     }
 
+	INIReader reader("setup.ini");
+
+	if (reader.ParseError() < 0) 
+	{
+		std::cout << "Can't load 'setup.ini'\n";
+		for (i = 0; i != NUMPARAMETERS_STR + NUMPARAMETERS; i++)
+		{
+			settings.push_back(true);
+		}
+	}
+	else
+	{
+		for (i = 0; i != NUMPARAMETERS_STR + NUMPARAMETERS; i++)
+		{
+			ss << "param" << i;
+			bool data = reader.GetBoolean("settings", ss.str(), true);
+			settings.push_back(data);
+			ss.clear();
+			ss = stringstream();
+		}
+	}
+
+	
+
 	string infile;
 	string outfile;
-	stringstream ss;
+	
 	std::istringstream oss;
 	size_t pos;
 
@@ -160,6 +196,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		oss >> month;
 		break;
 	case 4:
+	case 6:
 		/*ss << argv[1] << '/' << argv[2] << '/' << argv[2] << '-' << argv[1] << argv[3] << "A.zip";
 		infile = ss.str();
 		oss = std::istringstream(argv[1]);
@@ -172,7 +209,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		oss >> station_index;
 		oss.clear();*/
 
-		for (i = 1; i != 4; i++)
+		for (i = 1; i != argc; i++)
 			recognizeToken(string(argv[i]));
 
 		ss << s_year << '/' << s_station_index << '/' << s_station_index << '-' << s_year << s_month;// << radar1[radar] << ".zip";
@@ -186,6 +223,7 @@ int _tmain(int argc, _TCHAR* argv[])
 		oss = std::istringstream(argv[2]);
 		oss >> station_index;
 		oss.clear();
+		
 		break;
 	default:
 		break;
@@ -207,14 +245,24 @@ int _tmain(int argc, _TCHAR* argv[])
 	ss.clear();
 	ss = stringstream();
 	ss << s_station_index << '-' << s_year << s_month<<".csv";
-	outfile = ss.str();
+	outfile = outdir+ss.str();
+	infile = curdir + infile;
 
 	string morningstr;
 	string nightstr;
 	try
 	{
 		//TODO CHECK DATA ALREADY EXISTS!!! - OK
-		csvw.readCSV(outfile);
+		try
+		{
+			csvw.readCSV(outfile);
+		}
+		catch (...)
+		{
+			ss << "ERROR Reading input file" << endl;
+		}
+
+		
 		for (radar = 0; radar != NUMRADARS; radar++)
 		{
 			try
@@ -283,33 +331,116 @@ int _tmain(int argc, _TCHAR* argv[])
 							s.addData("", formats[i]);
 						}
 					}
-					s.setDayOrNight(0);
+
+					LaunchTime lt1;
+					lt1.tm_hour = 11;
+					lt1.tm_min = 30;
+					LaunchTime lt2;
+					lt2.tm_hour = 23;
+					lt2.tm_min = 30;
+
+					for (int cnt = 0; cnt <= 1; cnt++)
+					{
+						s.setDayOrNight(cnt);
+						s.processRAWFile();
+						if (settings[NUMPARAMETERS_STR+2])
+							s.processKN04File();
+						//yyyy.mm.dd hh:mm
+						LaunchTime lt;
+						lt1.tm_year = year;
+						lt1.tm_mon = month;
+						lt1.tm_day = day;
+						lt2.tm_year = year;
+						lt2.tm_mon = month;
+						lt2.tm_day = day;
+						if (cnt == 0)
+						{
+							lt = lt1;
+						}
+						else
+						{
+							lt = lt2;
+						}
+						
+
+						
+						
+						LaunchParameters l;
+						l.radarCode = radar1[radar];
+						//l.filesAvail = s.getFormatsTelegram();
+
+						int t1 = s.getRAWSoundingTime();
+						int t2 = s.getSoundingTime();
+						
+						for (int st = 0; st != NUMPARAMETERS_STR; st++)
+						{
+							if (settings[st])
+							{
+								switch (st)
+								{
+									case 0:
+										l.strparams.push_back(s.getFormatsTelegram());
+										break;
+									default:
+										break;
+								}
+							}
+							else
+							{
+								l.strparams.push_back("//");
+							}
+						}
+
+						for (int st = 0; st != NUMPARAMETERS; st++)
+						{
+							if (settings[st + NUMPARAMETERS_STR])
+							{
+								switch (st)
+								{
+								case 0:
+									l.params.push_back((double)s.getRAWSoundingTime());
+									break;
+								case 1:
+									l.params.push_back((double)s.getMaxAltitude());
+									break;
+								case 2:
+									l.params.push_back((double)s.getKN04Code());
+									break;
+								case 3:
+									l.params.push_back((double)s.getMaxDistance());
+									break;
+								case 4:
+									l.params.push_back((double)s.getMinElevation());
+									break;
+								case 5:
+									l.params.push_back((double)s.getAlt10Elevation());
+									break;
+								default:
+									break;
+								}
+							}
+							else
+							{
+								l.params.push_back(0.0f);
+							}
+						}
+
+						if (t1 || t2)
+							csvw.addLaunch(cnt, lt, l);
+
+						cout << "-----------------------------------\n SUMMARY INFORMATION"<< cnt << endl;
+						cout << "Formats " << s.checkFormats() << " of 14" << endl;
+						cout << "Sounding time(CRD) " << s.getSoundingTime() << endl;
+						cout << "Sounding time(RAW) " << s.getRAWSoundingTime() << endl;
+						cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;
+						cout << "Max distance(RAW) " << s.getMaxDistance() << endl;
+					}
+
+					
+					
+					/*s.setDayOrNight(1);
 					s.processRAWFile();
-					//yyyy.mm.dd hh:mm
-					LaunchTime lt;
-					lt.tm_year = year;
-					lt.tm_mon = month;
-					lt.tm_day = day;
-					lt.tm_hour = 11;
-					lt.tm_min = 30;// morning_min;
-					LaunchParameters l;
-					l.radarCode = radar1[radar];
-					int t1 = s.getRAWSoundingTime();
-					int t2 = s.getSoundingTime();
-					l.params.push_back((double)s.getRAWSoundingTime());
-					l.params.push_back((double)s.getMaxAltitude());
-
-					if (t1||t2)
-						csvw.addLaunch(0, lt, l);
-
-					cout << "-----------------------------------\n SUMMARY INFORMATION MORNING" << endl;
-					cout << "Formats " << s.checkFormats() << " of 14" << endl;
-					cout << "Sounding time(CRD) " << s.getSoundingTime() << endl;
-					cout << "Sounding time(RAW) " << s.getRAWSoundingTime() << endl;
-					cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;
-					s.setDayOrNight(1);
-					s.processRAWFile();
-
+					s.processKN04File();
 					LaunchTime lt2;
 					lt2.tm_year = year;
 					lt2.tm_mon = month;
@@ -318,11 +449,13 @@ int _tmain(int argc, _TCHAR* argv[])
 					lt2.tm_min = 30;//night_min;
 					l = LaunchParameters();
 					l.radarCode = radar1[radar];
+					//l.filesAvail = s.getFormatsTelegram();
+					l.strparams.push_back(s.getFormatsTelegram());
 					t1 = s.getRAWSoundingTime();
 					t2 = s.getSoundingTime();
 					l.params.push_back((double)s.getRAWSoundingTime());
 					l.params.push_back((double)s.getMaxAltitude());
-					
+					l.params.push_back((double)s.getKN04Code());
 					if (t1 || t2)
 						csvw.addLaunch(1, lt2, l);
 
@@ -330,7 +463,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					cout << "Formats " << s.checkFormats() << " of 14" << endl;
 					cout << "Sounding time(CRD) " << s.getSoundingTime() << endl;
 					cout << "Sounding time(RAW) " << s.getRAWSoundingTime() << endl;
-					cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;
+					cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;*/
 				}
 
 			}

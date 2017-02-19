@@ -36,6 +36,21 @@ int Sounding::checkFormats()
 	return c;
 }
 
+string Sounding::getFormatsTelegram()
+{
+	int it2 = 0;
+	string res = "";
+	for (auto i : formats)
+	{
+		if (hasFormat(i))
+		{
+			res += formats_sh[it2];
+		}
+		it2++;
+	}
+	return res;
+}
+
 string Sounding::getFormat(string format)
 {
 	if (!dayornight)
@@ -70,9 +85,26 @@ string Sounding::getCRDfile()
 
 string Sounding::getRAWfile()
 {
+	if (hasFormat(".RAW"))
+	{
+		return getFormat(".RAW");
+	}
 	if (hasFormat(mRawData))
 	{
 		return getFormat(mRawData);
+	}
+	return "";
+}
+
+string Sounding::getKN04file()
+{
+	if (hasFormat(".KN04"))
+	{
+		return getFormat(".KN04");
+	}
+	if (hasFormat(".KN4"))
+	{
+		return getFormat(".KN4");
 	}
 	return "";
 }
@@ -134,6 +166,48 @@ void Sounding::processRAWFile()
 	
 }
 
+int Sounding::getKN04Code()
+{
+	if (!dayornight)
+		return KN04Code1;
+	return KN04Code2;
+}
+
+void Sounding::processKN04File()
+{
+	string rawFile = getKN04file();
+	try
+	{
+		if (rawFile.length() > 0)
+		{
+			/*
+			ÈÑÕÎÄÍÛÅ ÄÀÍÍÛÅ ÇÎÍÄÈÐÎÂÀÍÈß ÇÀ 05.11.2016 11:30
+			ÏÐÈÇÅÌÍÛÉ ÂÅÒÅÐ (D V) :  22  6
+			ÏÐÈÇÅÌÍÎÅ ÄÀÂËÅÍÈÅ : 1011.0
+			ÐÀÑÏÎËÎÆÅÍÈÅ ÑÒÀÍÖÈÈ :
+			ØÈÐÎÒÀ :  43 ÄÎËÃÎÒÀ : 132
+			ÂÛÑÎÒÀ ÍÀÄ ÓÐÎÂÍÅÌ ÌÎÐß :    90
+			ÑÈÍÎÏÒÈ×ÅÑÊÈÉ ÈÍÄÅÊÑ ÑÒÀÍÖÈÈ : 31977
+			ÊÎÄ ÎÁËÀ×ÍÎÑÒÈ :
+			ÂÐÅÌ     H      D      E      A     T  U
+			*/
+			unsigned int newl = rawFile.find("31313 ");
+			
+			string code = rawFile.substr(newl+6,5);
+			istringstream is(code);
+			if (!dayornight)
+				is >> KN04Code1;
+			else
+				is >> KN04Code2;
+		}
+	}
+	catch (...)
+	{
+
+	}
+
+}
+
 int Sounding::getRAWSoundingTime()
 {
 	if (!dayornight)
@@ -156,6 +230,45 @@ int Sounding::getMaxAltitude()
 	else
 	{
 		return (int)rDaN.getMaxAltitude();
+	}
+	return 0;
+}
+
+int Sounding::getMaxDistance()
+{
+	if (!dayornight)
+	{
+		return (int)rDaM.getMaxDistance();
+	}
+	else
+	{
+		return (int)rDaN.getMaxDistance();
+	}
+	return 0;
+}
+
+float Sounding::getMinElevation()
+{
+	if (!dayornight)
+	{
+		return rDaM.getMinElevation();
+	}
+	else
+	{
+		return rDaN.getMinElevation();
+	}
+	return 0;
+}
+
+int Sounding::getAlt10Elevation()
+{
+	if (!dayornight)
+	{
+		return (int)rDaM.getAlt10Elevation();
+	}
+	else
+	{
+		return (int)rDaN.getAlt10Elevation();
 	}
 	return 0;
 }

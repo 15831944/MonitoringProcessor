@@ -13,6 +13,7 @@ public:
 	};
 	~Sounding()
 	{
+
 	};
 	
 	void setRAWDataIdentifier(string rdata);
@@ -21,10 +22,17 @@ public:
 	bool hasFormat(string format);
 	string getFormat(string format);
 	int checkFormats();
+	string getFormatsTelegram();
 	int getSoundingTime();
 	int getRAWSoundingTime();
 	int getMaxAltitude();
+	int getMaxDistance();
+	int getKN04Code();
+	float getMinElevation();
+	int getAlt10Elevation();
 	void processRAWFile();
+	void processKN04File();
+	void processTAE3File();
 private:
 	RAWData rDaM;  /*morning*/
 	RAWData rDaN; /* night */
@@ -32,6 +40,9 @@ private:
 	string mRawData;
 	string getRAWfile();
 	string getCRDfile();
+	string getKN04file();
+	int KN04Code1;
+	int KN04Code2;
 	map<string, string> mDataDay;
 	map<string, string> mDataNight;
 };

@@ -2,18 +2,37 @@
 
 void CSVWorker::addLaunch(int dayornight, LaunchTime lTime, LaunchParameters lParams)
 {
+	//TODO check LaunchTime exists +
+	//TODO check already loaded formats for any LaunchTime
+
+	/*if (hasLaunch(lTime))
+	{
+		LaunchParameters lp = monthDataDay[lTime];
+	}*/
+	
+
 	if (!dayornight)
 		monthDataDay[lTime] = lParams;
 	else
 		monthDataNight[lTime] = lParams;
 }
 
+bool CSVWorker::hasLaunch(LaunchTime lTime)
+{
+	if (monthDataDay[lTime].radarCode.length() > 0)
+		return true;
+	if (monthDataNight[lTime].radarCode.length() > 0)
+		return true;
+	return false;
+}
+
 void CSVWorker::readCSV(string filename)
 {
 	csv::ifstream is(filename);
-	is.set_delimiter(',', "$$");
+	is.set_delimiter(';', "$$");
 	if (is.is_open())
 	{
+		is.read_line(); //HEADER
 		while (is.read_line())
 		{
 			LaunchTime lt;
@@ -24,11 +43,32 @@ void CSVWorker::readCSV(string filename)
 			csv::sep space(' ', "<space>");
 			csv::sep point('.', "<point>");
 			double data;
+			string s_data;
 			is >> datetime >> lp.radarCode;
+			for (unsigned char i = 0; i != NUMPARAMETERS_STR; i++)
+			{
+				try
+				{
+					is >> s_data;
+					lp.strparams.push_back(s_data);
+				}
+				catch (...)
+				{
+					//break; //OLD VERSION?
+				}
+			}
 			for (unsigned char i = 0; i != NUMPARAMETERS; i++)
 			{
-				is >> data;
-				lp.params.push_back(data);
+				try
+				{
+					is >> data;
+					lp.params.push_back(data);
+				}
+				catch (...)
+				{
+					//break; //OLD VERSION?
+				}
+				
 			}
 			try
 			{
@@ -41,6 +81,10 @@ void CSVWorker::readCSV(string filename)
 				monthDataNight[lt] = lp;
 		}
 	}
+	else
+	{
+		cout << "ERROR Opening CSV file." << endl;
+	}
 }
 
 LaunchTime CSVWorker::parseTime(string datetime)
@@ -50,36 +94,76 @@ LaunchTime CSVWorker::parseTime(string datetime)
 	return lt;
 }
 
+LaunchParameters CSVWorker::getLaunch(int dayornight, LaunchTime lTime)
+{
+	//DO NOT USE!!!!
+	LaunchParameters lp;
+	map<LaunchTime, LaunchParameters>::iterator i;
+	for (i = monthDataDay.begin(); i != monthDataDay.end(); i++)
+	{
+		//if ()
+	}
+	return lp;
+}
+
+void CSVWorker::writeLaunch(csv::ofstream &os, LaunchTime lt, LaunchParameters lp)
+{
+	string dateStr = lt.getAsString();
+	os << dateStr << lp.radarCode;
+	for (auto it : lp.strparams)
+	{
+		os << it;
+	}
+	for (auto it : lp.params)
+	{
+		os << it;
+	}
+	os << NEWLINE;
+}
+
 void CSVWorker::writeCSV(string filename)
 {
 	csv::ofstream os(filename);
-	os.set_delimiter(',', "$$");
+	os.set_delimiter(';', "$$");
 	if (os.is_open())
 	{
-		map<LaunchTime, LaunchParameters>::iterator i;
+		os << "YYYY.MM.DD hh:mm" << "RADAR" << "FMTS" << "TIME" << "H" << "KN04CODE" << "D"<<"MINEL"<<"A10EL" << NEWLINE;
+		map<LaunchTime, LaunchParameters>::iterator it1 = monthDataDay.begin();
 		map<LaunchTime, LaunchParameters>::iterator it2 = monthDataNight.begin();
-		for (i = monthDataDay.begin(); i != monthDataDay.end(); i++)
+		
+		while ((it1 != monthDataDay.end()) && (it2 != monthDataNight.end()))
 		{
-			LaunchTime lt = (*i).first;
-			string dateStr = lt.getAsString();
-			os << dateStr << (*i).second.radarCode;
-			for (auto it : (*i).second.params)
+			if (((*it1).first < (*it2).first) || ((*it1).first == (*it2).first))
 			{
-				os << it;
+				writeLaunch(os, (*it1).first, (*it1).second);
+				writeLaunch(os, (*it2).first, (*it2).second);
+				it1++;
+				it2++;
+				continue;
 			}
-			os << NEWLINE;
-			lt.tm_hour = 23;
-			lt.tm_min = 30;
-			//lt = (*it2).first;
-			it2 = monthDataNight
-			dateStr = lt.getAsString();
-			os << dateStr << (*it2).second.radarCode;
-			for (auto it : (*it2).second.params)
+			if (((*it1).first >(*it2).first))
 			{
-				os << it;
+				writeLaunch(os, (*it2).first, (*it2).second);
+				writeLaunch(os, (*it1).first, (*it1).second);
+				it1++;
+				it2++;
 			}
-			os << NEWLINE;
-			//it2++;
+		}
+		if ((it1 == monthDataDay.end()) && (it2 != monthDataNight.end()))
+		{
+			while (it2 != monthDataNight.end())
+			{
+				writeLaunch(os, (*it2).first, (*it2).second);
+				it2++;
+			}
+		}
+		if ((it1 != monthDataDay.end()) && (it2 == monthDataNight.end()))
+		{
+			while (it1 != monthDataDay.end())
+			{
+				writeLaunch(os, (*it1).first, (*it1).second);
+				it1++;
+			}
 		}
 	}
 	os.flush();
