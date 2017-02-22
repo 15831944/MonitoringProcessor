@@ -129,6 +129,16 @@ void recognizeToken(string arg)
 	}
 }
 
+inline bool fileExists(const std::string& name) {
+	if (FILE *file = fopen(name.c_str(), "r")) {
+		fclose(file);
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 int _tmain(int argc, _TCHAR* argv[])
 {
 	int i;
@@ -171,7 +181,7 @@ int _tmain(int argc, _TCHAR* argv[])
 
 	
 
-	string infile;
+	string infile,infile2;
 	string outfile;
 	
 	std::istringstream oss;
@@ -214,6 +224,11 @@ int _tmain(int argc, _TCHAR* argv[])
 
 		ss << s_year << '/' << s_station_index << '/' << s_station_index << '-' << s_year << s_month;// << radar1[radar] << ".zip";
 		infile = ss.str();
+		ss.clear();
+		ss = stringstream();
+		ss << s_year << '/' << s_station_index << '/' << s_station_index << ' ' << s_year << s_month;// << radar1[radar] << ".zip";
+		infile2 = ss.str();
+
 		oss = std::istringstream(argv[1]);
 		oss >> year;
 		oss.clear();
@@ -267,10 +282,16 @@ int _tmain(int argc, _TCHAR* argv[])
 		{
 			try
 			{
-				zip_file file(infile + radar2[radar]);
+				string test_pr = infile;
+				if (!fileExists(infile + radar2[radar]))
+					test_pr = infile2;
+				zip_file file(test_pr + radar2[radar]);
 				string base = file.get_first_filename();
-				base = base.substr(0, base.find_last_of('/'));
-				ss << base << '/' << day << '.' << month << '.' << year;
+				if (base.find_last_of('/') != string::npos)
+					base = base.substr(0, base.find_last_of('/')) + "/";
+				else
+					base = "";
+				ss << base << day << '.' << month << '.' << year;
 				//base = ss.str();
 
 				for (day = 1; day <= daysInMonth(month); day++)
@@ -282,13 +303,13 @@ int _tmain(int argc, _TCHAR* argv[])
 
 					if (radar != 2)
 					{
-						ss << base << '/' << day << '.' << month << '.' << year;// << "-11.30";
+						ss << base << day << '.' << month << '.' << year;// << "-11.30";
 					}
 					else
 					{
 						char date[10];
 						sprintf_s(date, "%04d%02d%02d", year, month, day);
-						ss << base << '/' << string(date);
+						ss << base << string(date);
 					}
 
 					morningstr = ss.str();
