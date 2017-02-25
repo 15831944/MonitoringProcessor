@@ -127,7 +127,7 @@ void CSVWorker::writeCSV(string filename)
 	os.set_delimiter(';', "$$");
 	if (os.is_open())
 	{
-		os << "YYYY.MM.DD hh:mm" << "RADAR" << "FMTS" << "TIME" << "H" << "KN04CODE" << "D"<<"MINEL"<<"A10EL" << NEWLINE;
+		os << "YYYY.MM.DD hh:mm" << "RADAR" << "FMTS" << "TIME" << "H" << "KN04CODE" << "D" << "MINEL" << "A10EL" << "Q" << NEWLINE;
 		map<LaunchTime, LaunchParameters>::iterator it1 = monthDataDay.begin();
 		map<LaunchTime, LaunchParameters>::iterator it2 = monthDataNight.begin();
 		

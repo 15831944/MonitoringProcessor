@@ -9,6 +9,7 @@
 #include "Sounding.h"
 #include "CSVWorker.h"
 #include "INIReader.h"
+#include "MarkGenerator.h"
 
 using namespace std;
 
@@ -383,9 +384,8 @@ int _tmain(int argc, _TCHAR* argv[])
 							lt = lt2;
 						}
 						
+						MarkGen& mg = MarkGen::Instance();
 
-						
-						
 						LaunchParameters l;
 						l.radarCode = radar1[radar];
 						//l.filesAvail = s.getFormatsTelegram();
@@ -393,6 +393,8 @@ int _tmain(int argc, _TCHAR* argv[])
 						int t1 = s.getRAWSoundingTime();
 						int t2 = s.getSoundingTime();
 						
+						mg.setSoundingTime(t2);
+
 						for (int st = 0; st != NUMPARAMETERS_STR; st++)
 						{
 							if (settings[st])
@@ -411,7 +413,7 @@ int _tmain(int argc, _TCHAR* argv[])
 								l.strparams.push_back("//");
 							}
 						}
-
+						double alt;
 						for (int st = 0; st != NUMPARAMETERS; st++)
 						{
 							if (settings[st + NUMPARAMETERS_STR])
@@ -422,7 +424,9 @@ int _tmain(int argc, _TCHAR* argv[])
 									l.params.push_back((double)s.getRAWSoundingTime());
 									break;
 								case 1:
-									l.params.push_back((double)s.getMaxAltitude());
+									alt = (double)s.getMaxAltitude();
+									mg.setMaxAltitude((int)alt);
+									l.params.push_back(alt);
 									break;
 								case 2:
 									l.params.push_back((double)s.getKN04Code());
@@ -435,6 +439,9 @@ int _tmain(int argc, _TCHAR* argv[])
 									break;
 								case 5:
 									l.params.push_back((double)s.getAlt10Elevation());
+									break;
+								case 6:
+									l.params.push_back((double)mg.getQualityMark());
 									break;
 								default:
 									break;
