@@ -18,6 +18,8 @@ public:
 	{
 		int time;
 		float mH, mD, mE, mA, mT, mU;
+		MarkGen& mg = MarkGen::Instance();
+		
 		sscanf_s(str.c_str(), "%d %f %f %f %f %f %f", &time, &mH, &mD, &mE, &mA, &mT, &mU);
 		H[time] = mH;
 		D[time] = mD;
@@ -35,6 +37,19 @@ public:
 			maxAltitude = mH;
 		if (maxDistance < mD)
 			maxDistance = mD;
+
+		DispersionCalculator* dc = mg.getDispersionCalculator(0);
+		dc->dataInput(time, mH);
+		dc = mg.getDispersionCalculator(1);
+		dc->dataInput(time, mD);
+		dc = mg.getDispersionCalculator(2);
+		dc->dataInput(time, mE);
+		dc = mg.getDispersionCalculator(3);
+		dc->dataInput(time, mA);
+		dc = mg.getDispersionCalculator(4);
+		dc->dataInput(time, mT);
+		dc = mg.getDispersionCalculator(5);
+		dc->dataInput(time, mU);
 	}
 	int getSoundingTime()
 	{

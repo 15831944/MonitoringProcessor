@@ -16,6 +16,7 @@
 
 #include "minicsv.h"
 #include "LaunchParameters.h"
+#include "MarkGenerator.h"
 
 #define N 15
 

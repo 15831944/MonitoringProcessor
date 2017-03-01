@@ -178,6 +178,15 @@ int _tmain(int argc, _TCHAR* argv[])
 			ss.clear();
 			ss = stringstream();
 		}
+
+		MarkGen& mg = MarkGen::Instance();
+		for (i = 0; i != MARKS_NUMBER; i++)
+		{
+			ss << "param" << i;
+			mg.setMarkEnable(i, reader.GetBoolean("MarkGenerator", ss.str(), true));
+			ss.clear();
+			ss = stringstream();
+		}
 	}
 
 	
@@ -462,6 +471,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						cout << "Sounding time(RAW) " << s.getRAWSoundingTime() << endl;
 						cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;
 						cout << "Max distance(RAW) " << s.getMaxDistance() << endl;
+						mg.clearDispersionCalcs();
 					}
 
 					

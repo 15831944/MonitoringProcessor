@@ -1,23 +1,21 @@
 #ifndef DISPCALC_H
 #define DISPCALC_H
 
-#include "stdafx.h"
-
 class DispersionCalculator
 {
 public:
 	DispersionCalculator()
 	{
 		datacnt = 0;
-		ctime = 0;
+		ctime = -1;
 		ltime = 0;
 		thrValue = 10.0f;
 		mark = 10;
 		time200 = 0;
-	};
+	}
 	~DispersionCalculator()
 	{
-	};
+	}
 	inline void setThresholdValue(float v){
 		thrValue = v;
 	}
@@ -25,6 +23,15 @@ public:
 	float dispersion();
 	float mean();
 	inline int getDispersionMark(){ return mark; }
+	void clear()
+	{
+		datacnt = 0;
+		ctime = -1;
+		ltime = 0;
+		//thrValue = 10.0f;
+		mark = 10;
+		time200 = 0;
+	}
 private:
 	int mark;
 	float thrValue;

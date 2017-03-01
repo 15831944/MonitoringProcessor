@@ -1,30 +1,33 @@
 #include "DispersionCalc.h"
+#include "stdafx.h"
 
 void DispersionCalculator::dataInput(int time, float d)
 {
-	if (ctime == 0)
+	if (ctime == -1)
 	{
 		data[0] = d;
+		ctime = 0;
+		return;
 	}
-	float olddata = data[ctime];
+	float olddata = data[ctime - time200];
 	int oldtime = ctime;
-	while (ctime != time)
+	do
 	{
-		data[ctime-time200] = olddata + (d - olddata)*((float)(ctime - oldtime) / (float)(time - oldtime));
 		ctime++;
-		if (ctime > 200)
+		data[ctime-time200] = olddata + (d - olddata)*((float)(ctime - oldtime) / (float)(time - oldtime));
+		if (ctime > time200+198)
 		{
 			dispersion();
-			time200 = ctime;
+			time200 = ctime+1;
 		}
-	}
+	} while (ctime < time);
 }
 
 float DispersionCalculator::dispersion()
 {
 	float d=0;
 	float m = mean();
-	for (int i = ltime; i != ctime; i++)
+	for (int i = 0; i != ctime - time200; i++)
 	{
 		d += pow((data[i] - m), 2);
 	}
