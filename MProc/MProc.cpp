@@ -187,6 +187,14 @@ int _tmain(int argc, _TCHAR* argv[])
 			ss.clear();
 			ss = stringstream();
 		}
+
+		for (i = 0; i != DISPERSION_CALCULATORS; i++)
+		{
+			ss << "param" << i;
+			mg.setDispersionCalcThreshold(i, reader.GetReal("DispersionCalculator", ss.str(), 1.0f));
+			ss.clear();
+			ss = stringstream();
+		}
 	}
 
 	

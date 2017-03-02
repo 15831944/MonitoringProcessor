@@ -19,14 +19,89 @@ public:
 		int time;
 		float mH, mD, mE, mA, mT, mU;
 		MarkGen& mg = MarkGen::Instance();
-		
-		sscanf_s(str.c_str(), "%d %f %f %f %f %f %f", &time, &mH, &mD, &mE, &mA, &mT, &mU);
+		string arr[7];
+		//sscanf_s(str.c_str(), "%d %f %f %f %f %f %f", &time, &mH, &mD, &mE, &mA, &ssT, &ssU);
+		stringstream ssin(str);
+		int i=0;
+		while (ssin.good() && i < 7){
+			ssin >> arr[i];
+			++i;
+		}
+		i = 0;
+		try
+		{
+			time = atoi(arr[i].c_str());
+		}
+		catch (...)
+		{
+			time = 0;
+		}
+		i++;
+		try
+		{
+			mH = (float)atof(arr[i].c_str());
+		}
+		catch (...)
+		{
+			mH = 0;
+		}
+		i++;
+		try
+		{
+			mD = (float)atof(arr[i].c_str());
+		}
+		catch (...)
+		{
+			mD = 0;
+		}
+		i++;
+		try
+		{
+			mE = (float)atof(arr[i].c_str());
+		}
+		catch (...)
+		{
+			mE = 0;
+		}
+		i++;
+		try
+		{
+			mA = (float)atof(arr[i].c_str());
+		}
+		catch (...)
+		{
+			mA = 0;
+		}
+		i++;
+		try
+		{
+			mT = (float)atof(arr[i].c_str());
+		}
+		catch (...)
+		{
+			mT = 0;
+		}
+		i++;
+		try
+		{
+			mU = (float)atof(arr[i].c_str());
+		}
+		catch (...)
+		{
+			mU = 0;
+		}
+
 		H[time] = mH;
 		D[time] = mD;
 		E[time] = mE;
 		A[time] = mA;
 		T[time] = mT;
 		U[time] = mU;
+
+		/**/
+
+		
+
 		if ((minElevation > 10.0f) && (mE <= 10.0f))
 		{
 			alt10Elevation = mH;
@@ -38,18 +113,21 @@ public:
 		if (maxDistance < mD)
 			maxDistance = mD;
 
-		DispersionCalculator* dc = mg.getDispersionCalculator(0);
-		dc->dataInput(time, mH);
-		dc = mg.getDispersionCalculator(1);
-		dc->dataInput(time, mD);
-		dc = mg.getDispersionCalculator(2);
-		dc->dataInput(time, mE);
-		dc = mg.getDispersionCalculator(3);
-		dc->dataInput(time, mA);
-		dc = mg.getDispersionCalculator(4);
-		dc->dataInput(time, mT);
-		dc = mg.getDispersionCalculator(5);
-		dc->dataInput(time, mU);
+		if (mg.getMarkEnable(2))
+		{
+			DispersionCalculator* dc = mg.getDispersionCalculator(0);
+			dc->dataInput(time, mH);
+			dc = mg.getDispersionCalculator(1);
+			dc->dataInput(time, mD);
+			dc = mg.getDispersionCalculator(2);
+			dc->dataInput(time, mE);
+			dc = mg.getDispersionCalculator(3);
+			dc->dataInput(time, mA);
+			dc = mg.getDispersionCalculator(4);
+			dc->dataInput(time, mT);
+			dc = mg.getDispersionCalculator(5);
+			dc->dataInput(time, mU);
+		}
 	}
 	int getSoundingTime()
 	{
