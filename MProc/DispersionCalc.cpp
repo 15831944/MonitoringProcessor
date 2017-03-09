@@ -50,7 +50,7 @@ float DispersionCalculator::dispersion()
 float DispersionCalculator::dispersion_window()
 {
 	float d = 0;
-	float m = mean();
+	float m = mean();sdfsdfsdfsdf
 	float window = 20;
 	int kr = (int)((ctime - time200) / window);
 	for (int i = 0; i != kr-1; i++)
