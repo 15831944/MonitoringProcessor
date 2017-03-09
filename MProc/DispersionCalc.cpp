@@ -62,7 +62,7 @@ float DispersionCalculator::dispersion_window()
 	
 	if ((d > thrValue) && (ctime>200))
 	{
-		std::cout << "Dispcalc:" << d << std::endl;
+		std::cout << "Dispcalc:" << d << ' ' << ctime << ' ' << data[0]<<std::endl;
 		mark--;
 		if (mark < 0)
 			mark = 0;
