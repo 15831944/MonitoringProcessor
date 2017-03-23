@@ -137,6 +137,45 @@ public:
 		it--;
 		return (*it).first;
 	}
+	float getGroundTemperature()
+	{
+		float t;
+		if (T.size() < 100)
+			return T[0];
+		for (int i = 0; i != 60; i++)
+		{
+			t += T[i];
+		}
+		t /= 60;
+		return t;
+	}
+
+	float getMinTemperature()
+	{
+		float t=T[0];
+		for (int i = 1; i != T.size(); i++)
+		{
+			if (T[i] < t)
+				t = T[i];
+		}
+		return t;
+	}
+	float getMinTemperature(float Hthr)
+	{
+		int cnt=0;
+		for (int i = 1; i != T.size(); i++)
+		{
+			if (H[i] > Hthr)
+				cnt = i;
+		}
+		float t = T[cnt];
+		for (int i = cnt; i != T.size(); i++)
+		{
+			if (T[i] < t)
+				t = T[i];
+		}
+		return t;
+	}
 	inline float getMaxAltitude()
 	{
 		return maxAltitude;
@@ -155,6 +194,7 @@ public:
 	}
 	map<int,float> H, D, E, A, T, U;
 private:
+	//float groundTemp;
 	float maxAltitude;
 	float maxDistance;
 	float minElevation;

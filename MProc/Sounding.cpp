@@ -109,6 +109,14 @@ string Sounding::getKN04file()
 	return "";
 }
 
+string Sounding::getINFOfile()
+{
+	if (hasFormat(".info"))
+	{
+		return getFormat(".info");
+	}
+	return "";
+}
 
 int Sounding::getSoundingTime()
 {
@@ -121,6 +129,41 @@ int Sounding::getSoundingTime()
 	//last_str = "1 2 3 4";
 	sscanf_s(last_str.c_str(), "%f %f %f %f",&a,&b,&c,&d);
 	return (int)a;
+}
+
+void Sounding::processINFOFile()
+{
+	string infoFile = getINFOfile();
+	try
+	{
+		if (infoFile.length() > 0)
+		{
+			unsigned int newl = infoFile.find("RadioZondType: ");
+			string last_str = infoFile.substr(newl, infoFile.find('\n', newl) - newl);
+			int zond_type = 0;
+			sscanf_s(last_str.c_str(), "%d", &zond_type);
+			if (!dayornight)
+				infozond1 = zond_type;
+			else
+				infozond2 = zond_type;
+		}
+	}
+	catch (...)
+	{
+
+	}
+}
+
+int Sounding::getInfoZondType()
+{
+	if (!dayornight)
+	{
+		return infozond1;
+	}
+	else
+	{
+		return infozond2;
+	}
 }
 
 void Sounding::processRAWFile()
@@ -256,6 +299,45 @@ float Sounding::getMinElevation()
 	else
 	{
 		return rDaN.getMinElevation();
+	}
+	return 0;
+}
+
+float Sounding::getGroundTemperature()
+{
+	if (!dayornight)
+	{
+		return rDaM.getGroundTemperature();
+	}
+	else
+	{
+		return rDaN.getGroundTemperature();
+	}
+	return 0;
+}
+
+float Sounding::getMinTemperature()
+{
+	if (!dayornight)
+	{
+		return rDaM.getMinTemperature();
+	}
+	else
+	{
+		return rDaN.getMinTemperature();
+	}
+	return 0;
+}
+
+float Sounding::getMinTemperature(float H)
+{
+	if (!dayornight)
+	{
+		return rDaM.getMinTemperature(H);
+	}
+	else
+	{
+		return rDaN.getMinTemperature(H);
 	}
 	return 0;
 }

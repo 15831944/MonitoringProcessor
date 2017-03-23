@@ -460,6 +460,15 @@ int _tmain(int argc, _TCHAR* argv[])
 								case 6:
 									l.params.push_back((double)mg.getQualityMark());
 									break;
+								case 7:
+									l.params.push_back((double)s.getGroundTemperature());
+									break;
+								case 8:
+									l.params.push_back((double)s.getMinTemperature());
+									break;
+								case 9:
+									l.params.push_back((double)s.getInfoZondType());
+									break;
 								default:
 									break;
 								}

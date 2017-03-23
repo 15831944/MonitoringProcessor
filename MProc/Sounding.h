@@ -28,11 +28,16 @@ public:
 	int getMaxAltitude();
 	int getMaxDistance();
 	int getKN04Code();
+	int getInfoZondType();
 	float getMinElevation();
+	float getGroundTemperature();
+	float getMinTemperature();
+	float getMinTemperature(float H);
 	int getAlt10Elevation();
 	void processRAWFile();
 	void processKN04File();
 	void processTAE3File();
+	void processINFOFile();
 private:
 	RAWData rDaM;  /*morning*/
 	RAWData rDaN; /* night */
@@ -41,8 +46,11 @@ private:
 	string getRAWfile();
 	string getCRDfile();
 	string getKN04file();
+	string getINFOfile();
 	int KN04Code1;
 	int KN04Code2;
+	int infozond1;
+	int infozond2;
 	map<string, string> mDataDay;
 	map<string, string> mDataNight;
 };
