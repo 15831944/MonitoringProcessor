@@ -139,7 +139,7 @@ public:
 	}
 	float getGroundTemperature()
 	{
-		float t;
+		float t = 0;
 		if (T.size() < 100)
 			return T[0];
 		for (int i = 0; i != 60; i++)

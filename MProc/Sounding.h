@@ -10,6 +10,7 @@ public:
 	Sounding()
 	{
 		mRawData = ".RAW";
+		infozond1 = infozond2 = 0;
 	};
 	~Sounding()
 	{

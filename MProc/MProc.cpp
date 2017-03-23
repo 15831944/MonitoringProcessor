@@ -382,6 +382,7 @@ int _tmain(int argc, _TCHAR* argv[])
 					{
 						s.setDayOrNight(cnt);
 						s.processRAWFile();
+						s.processINFOFile();
 						if (settings[NUMPARAMETERS_STR+2])
 							s.processKN04File();
 						//yyyy.mm.dd hh:mm

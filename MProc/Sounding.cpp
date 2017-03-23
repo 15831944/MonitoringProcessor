@@ -138,7 +138,10 @@ void Sounding::processINFOFile()
 	{
 		if (infoFile.length() > 0)
 		{
-			unsigned int newl = infoFile.find("RadioZondType: ");
+			size_t newl = infoFile.find("RadioZondType");
+			if (newl == string::npos)
+				return;
+			newl += 15;
 			string last_str = infoFile.substr(newl, infoFile.find('\n', newl) - newl);
 			int zond_type = 0;
 			sscanf_s(last_str.c_str(), "%d", &zond_type);
