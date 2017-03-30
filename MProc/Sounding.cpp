@@ -117,6 +117,18 @@ string Sounding::getINFOfile()
 	}
 	return "";
 }
+string Sounding::getTAE3file()
+{
+	if (hasFormat(".TAE3"))
+	{
+		return getFormat(".TAE3");
+	}
+	if (hasFormat(".TAE03"))
+	{
+		return getFormat(".TAE03");
+	}
+	return "";
+}
 
 int Sounding::getSoundingTime()
 {
@@ -212,6 +224,58 @@ void Sounding::processRAWFile()
 	
 }
 
+void Sounding::processTAE3File()
+{
+	string tae3File = getTAE3file();
+	try
+	{
+		if (tae3File.length() > 0)
+		{
+			/*
+			
+			рюакхжю пегскэрюрнб гнмдхпнбюмхъ рющ-3
+			мювюкн мюакчдемхи : 01.03.2017 11:30
+			йнмеж мюакчдемхи  : 01.03.2017 12:59
+			бшянрю янкмжю : 7 цпюд.
+			яхмнорхвеяйхи хмдейя ярюмжхх : 23933
+			йнд накювмнярх : 00900
+			опхгелмюъ ньхайю релоепюрспш : 0.3 цпюд.
+			опхгелмюъ ньхайю бкюфмнярх   : 6.8 %
+		H       P       T    U   D    V   TD
+			*/
+
+			//оПНОСЯРХРЭ 9 ЯРПНЙ
+			unsigned int newl = tae3File.find('\n');
+			for (int i = 0; i != 9; i++)
+			{
+				newl = tae3File.find('\n', newl) + 1;
+			}
+
+			//ЙНМЕЖ ЯРПНЙХ
+			while (newl < tae3File.length())
+			{
+				string last_str = tae3File.substr(newl, tae3File.find('\n', newl) - newl);
+				if (!dayornight)
+					tDaM.addString(last_str);
+				else
+					tDaN.addString(last_str);
+				newl = tae3File.find('\n', newl) + 1;
+			}
+			if (!dayornight)
+				tDaM.compute();
+			else
+				tDaN.compute();
+
+
+		}
+	}
+	catch (...)
+	{
+		cout << "Error reading TAE3!" << endl;
+	}
+
+}
+
 int Sounding::getKN04Code()
 {
 	if (!dayornight)
@@ -226,17 +290,7 @@ void Sounding::processKN04File()
 	{
 		if (rawFile.length() > 0)
 		{
-			/*
-			хяундмше дюммше гнмдхпнбюмхъ гю 05.11.2016 11:30
-			опхгелмши береп (D V) :  22  6
-			опхгелмне дюбкемхе : 1011.0
-			пюяонкнфемхе ярюмжхх :
-			ьхпнрю :  43 днкцнрю : 132
-			бшянрю мюд спнбмел лнпъ :    90
-			яхмнорхвеяйхи хмдейя ярюмжхх : 31977
-			йнд накювмнярх :
-			бпел     H      D      E      A     T  U
-			*/
+			
 			unsigned int newl = rawFile.find("31313 ");
 			
 			string code = rawFile.substr(newl+6,5);
@@ -252,6 +306,44 @@ void Sounding::processKN04File()
 
 	}
 
+}
+
+float Sounding::getAverageWindDirection()
+{
+	try
+	{
+		if (!dayornight)
+		{
+			return tDaM.getAverageWindDirection();
+		}
+		else
+		{
+			return tDaN.getAverageWindDirection();
+		}
+	}
+	catch (...)
+	{
+	}
+	return 0;
+}
+
+float Sounding::getAverageWindSpeed()
+{
+	try
+	{
+		if (!dayornight)
+		{
+			return tDaM.getAverageWindSpeed();
+		}
+		else
+		{
+			return tDaN.getAverageWindSpeed();
+		}
+	}
+	catch (...)
+	{
+	}
+	return 0;
 }
 
 int Sounding::getRAWSoundingTime()

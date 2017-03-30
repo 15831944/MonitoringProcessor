@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "RAWData.h"
+#include "TAE3.h"
 
 class Sounding
 {
@@ -34,6 +35,8 @@ public:
 	float getGroundTemperature();
 	float getMinTemperature();
 	float getMinTemperature(float H);
+	float getAverageWindDirection();
+	float getAverageWindSpeed();
 	int getAlt10Elevation();
 	void processRAWFile();
 	void processKN04File();
@@ -42,12 +45,15 @@ public:
 private:
 	RAWData rDaM;  /*morning*/
 	RAWData rDaN; /* night */
+	TAE3 tDaM;  /*morning*/
+	TAE3 tDaN; /* night */
 	int dayornight;
 	string mRawData;
 	string getRAWfile();
 	string getCRDfile();
 	string getKN04file();
 	string getINFOfile();
+	string getTAE3file();
 	int KN04Code1;
 	int KN04Code2;
 	int infozond1;

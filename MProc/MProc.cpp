@@ -383,6 +383,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						s.setDayOrNight(cnt);
 						s.processRAWFile();
 						s.processINFOFile();
+						s.processTAE3File();
 						if (settings[NUMPARAMETERS_STR+2])
 							s.processKN04File();
 						//yyyy.mm.dd hh:mm
@@ -469,6 +470,12 @@ int _tmain(int argc, _TCHAR* argv[])
 									break;
 								case 9:
 									l.params.push_back((double)s.getInfoZondType());
+									break;
+								case 10:
+									l.params.push_back((double)s.getAverageWindDirection());
+									break;
+								case 11:
+									l.params.push_back((double)s.getAverageWindSpeed());
 									break;
 								default:
 									break;
