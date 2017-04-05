@@ -85,7 +85,7 @@ void TAE3::compute()
 	//sumsin /= dcnt;
 	if (dcnt)
 	{
-		avD = atan2(sumsin, sumcos)*180;
+		avD = atan2(sumsin, sumcos)*180/3.1415926535;
 		avV /= (float)dcnt;
 	}
 }
