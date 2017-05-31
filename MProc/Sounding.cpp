@@ -119,13 +119,13 @@ string Sounding::getINFOfile()
 }
 string Sounding::getTAE3file()
 {
-	if (hasFormat(".TAE3"))
-	{
-		return getFormat(".TAE3");
-	}
 	if (hasFormat(".TAE03"))
 	{
 		return getFormat(".TAE03");
+	}
+	if (hasFormat(".TAE3"))
+	{
+		return getFormat(".TAE3");
 	}
 	return "";
 }
@@ -252,7 +252,7 @@ void Sounding::processTAE3File()
 			}
 
 			//конец строки
-			while (newl < tae3File.length())
+			while (newl < tae3File.length()-4)
 			{
 				string last_str = tae3File.substr(newl, tae3File.find('\n', newl) - newl);
 				if (!dayornight)
