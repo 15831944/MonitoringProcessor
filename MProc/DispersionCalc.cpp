@@ -1,7 +1,7 @@
 #include "DispersionCalc.h"
 #include "stdafx.h"
 
-void DispersionCalculator::dataInput(int time, float d)
+/*void DispersionCalculator::dataInput(int time, float d)
 {
 	if (ctime == -1)
 	{
@@ -26,7 +26,7 @@ void DispersionCalculator::dataInput(int time, float d)
 			time200 = ctime+1;
 		}
 	} while (ctime < time);
-}
+}*/
 
 float DispersionCalculator::dispersion()
 {
