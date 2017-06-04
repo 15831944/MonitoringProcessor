@@ -39,9 +39,16 @@ float RAWData::getMinTemperature(float Hthr)
 float RAWData::getGroundTemperature()
 {
 	float t = 0;
-	if (T.size() < 100)
-		return T[0];
-	map<int, float>::iterator i, j;
+	
+
+	if ((T.size() < 100) && (T.size() > 0))
+	{
+		t = (*T.begin()).second;
+		return t;
+	}
+		
+	if (T.size() == 0)
+		return -1;
 	int time = 0;
 	//for (int i = 0; i != 60; i++)
 	//OLD
@@ -57,7 +64,9 @@ float RAWData::getGroundTemperature()
 	t += (*i).second;
 	}
 	t /= 6;*/
+	map<int, float>::iterator i, j;
 	i = j = T.begin();
+
 	i++;
 	while ((*i).first < 50)
 	{
