@@ -24,7 +24,7 @@ void MarkGen::calcDispMark()
 	marks[2] = 0;
 	for (int i = 0; i != DISPERSION_CALCULATORS; i++)
 	{
-		marks[2] += dispersion_calculators[i]->getDispersionMark();
+		marks[2] += dispersion_calculators[i]->getMark();
 	}
 	marks[2] /= DISPERSION_CALCULATORS;
 }

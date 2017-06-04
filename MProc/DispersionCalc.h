@@ -28,7 +28,6 @@ public:
 	float dispersion(int start, int end);
 	float mean();
 	float mean(int start,int end);
-	inline int getDispersionMark(){ return mark; }
 };
 
 #endif

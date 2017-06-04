@@ -3,8 +3,9 @@
 
 #include "stdafx.h"
 #include "DispersionCalc.h"
+#include "DerivativeCalc.h"
 
-#define MARKS_NUMBER 3
+#define MARKS_NUMBER 4
 #define DISPERSION_CALCULATORS 6
 class MarkGen
 {
@@ -51,20 +52,31 @@ public:
 
 	DispersionCalculator* getDispersionCalculator(int num)
 	{
-		return dispersion_calculators[num];
+		return (DispersionCalculator*)dispersion_calculators[num];
 	}
 
-	void clearDispersionCalcs()
+	DerivativeCalculator* getDerivativeCalculator(int num)
+	{
+		return (DerivativeCalculator*)derivative_calculators[num];
+	}
+
+	void clearCalcs()
 	{
 		for (int i = 0; i != DISPERSION_CALCULATORS; i++)
 		{
 			dispersion_calculators[i]->clear();
+			derivative_calculators[i]->clear();
 		}
 	}
 	inline void setDispersionCalcThreshold(int num, float thr)
 	{
 		dispersion_calculators[num]->setThresholdValue(thr);
 	}
+	inline void setDerivativeCalcThreshold(int num, float thr)
+	{
+		dispersion_calculators[num]->setThresholdValue(thr);
+	}
+	
 private:
 	MarkGen()
 	{
@@ -79,6 +91,8 @@ private:
 		{
 			DispersionCalculator* dc = new DispersionCalculator();
 			dispersion_calculators[i] = dc;
+			DerivativeCalculator* dc1 = new DerivativeCalculator();
+			derivative_calculators[i] = dc1;
 		}
 	};
 	~MarkGen()
@@ -93,7 +107,8 @@ private:
 	int marks[MARKS_NUMBER];
 	int mark_weights[MARKS_NUMBER];
 	bool mark_enable[MARKS_NUMBER];
-	DispersionCalculator* dispersion_calculators[DISPERSION_CALCULATORS];
+	Calculator* dispersion_calculators[DISPERSION_CALCULATORS];
+	Calculator* derivative_calculators[DISPERSION_CALCULATORS];
 };
 
 #endif

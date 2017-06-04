@@ -191,7 +191,7 @@ void RAWData::addString(string str)
 
 	if (mg.getMarkEnable(2))
 	{
-		DispersionCalculator* dc = mg.getDispersionCalculator(0);
+		Calculator* dc = mg.getDispersionCalculator(0);
 		dc->dataInput(time, mH);
 		dc = mg.getDispersionCalculator(1);
 		dc->dataInput(time, mD);
@@ -204,4 +204,20 @@ void RAWData::addString(string str)
 		dc = mg.getDispersionCalculator(5);
 		dc->dataInput(time, mU);
 	}
+
+	/*if (mg.getMarkEnable(3))
+	{
+		Calculator* dc = mg.getDerivativeCalculator(0);
+		dc->dataInput(time, mH);
+		dc = mg.getDispersionCalculator(1);
+		dc->dataInput(time, mD);
+		dc = mg.getDispersionCalculator(2);
+		dc->dataInput(time, mE);
+		dc = mg.getDispersionCalculator(3);
+		dc->dataInput(time, mA);
+		dc = mg.getDispersionCalculator(4);
+		dc->dataInput(time, mT);
+		dc = mg.getDispersionCalculator(5);
+		dc->dataInput(time, mU);
+	}*/
 }

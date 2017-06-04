@@ -496,7 +496,7 @@ int _tmain(int argc, _TCHAR* argv[])
 						cout << "Sounding time(RAW) " << s.getRAWSoundingTime() << endl;
 						cout << "Max altitude(RAW) " << s.getMaxAltitude() << endl;
 						cout << "Max distance(RAW) " << s.getMaxDistance() << endl;
-						mg.clearDispersionCalcs();
+						mg.clearCalcs();
 					}
 
 					
