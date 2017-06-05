@@ -10,11 +10,16 @@
 #define MPROCUTILS_H
 
 int station_index, year, month, day;
+int morning_hour;
+int night_hour;
 int morning_min;
 int night_min;
 string s_station_index, s_year, s_month;
 string curdir = "";
 string outdir = "";
+string error_str;
+
+#define FIND_ALL_FILES
 
 int daysInMonth(int month)
 {
@@ -34,11 +39,99 @@ int daysInMonth(int month)
 	return numberOfDays;
 }
 
+string try_readFormat(zip_file &file, string base, int dayornight, string format, string formattedString, int hour, int minute)
+{
+	string data="";
+	string filename;
+	char prefix[50];
+
+	sprintf_s(prefix, formattedString.c_str(), hour,minute, format.c_str());
+	filename = base + string(prefix);
+	try
+	{
+		data = file.read(filename);
+		if (!dayornight)
+		{
+			morning_hour = hour;
+			morning_min = minute;
+			if (hour != 11)
+			{
+				error_str = "?";
+			}
+			else
+			{
+				error_str = "";
+			}
+		}
+		else
+		{
+			if (hour != 23)
+			{
+				error_str = "?";
+			}
+			else
+			{
+				error_str = "";
+			}
+		}
+		return data;
+	}
+	catch (...)
+	{
+		/*(if (!dayornight)
+		{
+			morning_hour = 0;
+			morning_min = 0;
+		}*/
+	}
+
+	return data;
+}
+
 string readFormat(zip_file &file, string base, int dayornight, string format)
 {
 	string data;
 	string filename;
 	char prefix[50];
+#ifdef FIND_ALL_FILES
+	if (!dayornight)
+	{
+		for (int j = 0; j != 24; j++)
+		{
+			for (int i = 0; i != 60; i++)
+			{
+				data = try_readFormat(file, base, dayornight, format, "-%02d.%02d%s", j, i);
+				if (!data.empty())
+					return data;
+				data = try_readFormat(file, base, dayornight, format, "-%02d%02d%s", j, i);
+				if (!data.empty())
+					return data;
+			}
+		}
+	}
+	else
+	{
+		if (morning_hour || morning_min)
+		{
+			//WARNING!!!
+			// Если пуск длился менее часа то может возникнуть ошибка, но 
+			// Такое очень редко бывает, наверное даже никогда. 
+			for (int j = morning_hour+1; j != 24; j++)
+			{
+				for (int i = 0; i != 60; i++)
+				{
+					data = try_readFormat(file, base, dayornight, format, "-%02d.%02d%s", j, i);
+					if (!data.empty())
+						return data;
+					data = try_readFormat(file, base, dayornight, format, "-%02d%02d%s", j, i);
+					if (!data.empty())
+						return data;
+				}
+			}
+		}
+		
+	}
+#else
 	for (int i = 30; i != 60; i++)
 	{
 		if (!dayornight)
@@ -88,6 +181,8 @@ string readFormat(zip_file &file, string base, int dayornight, string format)
 
 		}
 	}
+#endif
+
 	throw 1;
 }
 

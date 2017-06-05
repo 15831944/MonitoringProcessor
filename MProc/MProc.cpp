@@ -269,7 +269,7 @@ int _tmain(int argc, _TCHAR* argv[])
 								switch (st)
 								{
 									case 0:
-										l.strparams.push_back(s.getFormatsTelegram());
+										l.strparams.push_back(s.getFormatsTelegram() + error_str);
 										break;
 									default:
 										break;
