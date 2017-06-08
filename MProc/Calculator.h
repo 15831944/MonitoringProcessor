@@ -7,10 +7,11 @@ public:
 	void setThresholdValue(float v){
 		thrValue = v;
 	}
-	void dataInput(int time, float d); 
+	void dataInput(int time, float d);
 	virtual float calculate(){ return 0; };
 	virtual float calculate_window(){ return 0; };
 	virtual float calculate(int start, int end){ return 0; };
+	virtual void customClear(){}
 	int getMark(){ return mark; }
 	void clear()
 	{
@@ -20,6 +21,7 @@ public:
 		//thrValue = 10.0f;
 		mark = 0;
 		time200 = 0;
+		customClear();
 	}
 protected:
 	int mark;

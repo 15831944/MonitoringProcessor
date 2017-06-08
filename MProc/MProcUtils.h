@@ -4,7 +4,7 @@
 #include "Sounding.h"
 #include "CSVWorker.h"
 #include "INIReader.h"
-#include "MarkGenerator.h"
+#include "RadarUtils.h"
 
 #ifndef MPROCUTILS_H
 #define MPROCUTILS_H
@@ -18,8 +18,14 @@ string s_station_index, s_year, s_month;
 string curdir = "";
 string outdir = "";
 string error_str;
+string infile, infile2;
+string outfile;
+CSVWorker csvw;
+bool final_prompt;
 
-#define FIND_ALL_FILES
+vector<bool> settings;
+
+//#define FIND_ALL_FILES
 
 int daysInMonth(int month)
 {
@@ -187,6 +193,7 @@ string readFormat(zip_file &file, string base, int dayornight, string format)
 }
 
 #endif
+
 int strToInt(string myString)
 {
 	istringstream buffer(myString);
@@ -222,12 +229,143 @@ void recognizeToken(string arg)
 	}
 }
 
-inline bool fileExists(const std::string& name) {
-	if (FILE *file = fopen(name.c_str(), "r")) {
-		fclose(file);
-		return true;
+void readSetupFile()
+{
+	stringstream ss;
+	int i;
+	INIReader reader("setup.ini");
+
+	if (reader.ParseError() < 0)
+	{
+		std::cout << "Can't load 'setup.ini'\n";
+		for (i = 0; i != NUMPARAMETERS_STR + NUMPARAMETERS; i++)
+		{
+			settings.push_back(true);
+		}
 	}
-	else {
-		return false;
+	else
+	{
+		final_prompt = reader.GetBoolean("settings", "prompt", false);
+
+		for (i = 0; i != NUMPARAMETERS_STR + NUMPARAMETERS; i++)
+		{
+			ss << "param" << i;
+			bool data = reader.GetBoolean("settings", ss.str(), true);
+			settings.push_back(data);
+			ss.clear();
+			ss = stringstream();
+		}
+
+		MarkGen& mg = MarkGen::Instance();
+		for (i = 0; i != MARKS_NUMBER; i++)
+		{
+			ss << "param" << i;
+			mg.setMarkEnable(i, reader.GetBoolean("MarkGenerator", ss.str(), true));
+			ss.clear();
+			ss = stringstream();
+		}
+
+		for (i = 0; i != DISPERSION_CALCULATORS; i++)
+		{
+			ss << "param" << i;
+			mg.setDispersionCalcThreshold(i, reader.GetReal("DispersionCalculator", ss.str(), 1.0f));
+			ss.clear();
+			ss = stringstream();
+		}
+
+		for (i = 0; i != DISPERSION_CALCULATORS; i++)
+		{
+			ss << "param" << i;
+			mg.setDerivativeCalcThreshold(i, reader.GetReal("DerivativeCalculator", ss.str(), 30.0f));
+			ss.clear();
+			ss = stringstream();
+		}
+
 	}
+}
+
+bool printUsageStrings(int argc, _TCHAR* argv[])
+{
+	if (argc <= 1)
+	{
+		std::cout << "usage: " << argv[0] << " filename" << std::endl;
+		std::cout << "usage: " << argv[0] << " Y=yyyy I=iiiii M=mm" << std::endl;
+		return 0;
+	}
+	return 1;
+}
+
+void readCSVFile()
+{ 
+	stringstream ss;
+	try
+	{
+		csvw.readCSV(outfile);
+	}
+	catch (...)
+	{
+		ss << "ERROR Reading input file" << endl;
+	} 
+}
+
+void processInputParameters(int argc, _TCHAR* argv[])
+{
+	std::istringstream oss;
+	stringstream ss;
+	int i;
+	size_t pos;
+
+	switch (argc)
+	{
+	case 2:
+		infile = string(argv[1]);
+		pos = infile.find_last_of('/');
+		if (pos == std::string::npos)
+			pos = 0;
+		oss = std::istringstream(infile.substr(pos, infile.find('-')));
+		oss >> station_index;
+		oss.clear();
+		oss = std::istringstream(infile.substr(infile.find('-') + 1, 4));
+		oss >> year;
+		oss.clear();
+		oss = std::istringstream(infile.substr(infile.find('-') + 5, 2));
+		oss >> month;
+		break;
+	case 4:
+	case 6:
+
+		for (i = 1; i != argc; i++)
+			recognizeToken(string(argv[i]));
+
+		ss << s_year << '/' << s_station_index << '/' << s_station_index << '-' << s_year << s_month;// << radar1[radar] << ".zip";
+		infile = ss.str();
+		ss.clear();
+		ss = stringstream();
+		ss << s_year << '/' << s_station_index << '/' << s_station_index << ' ' << s_year << s_month;// << radar1[radar] << ".zip";
+		infile2 = ss.str();
+
+		oss = std::istringstream(argv[1]);
+		oss >> year;
+		oss.clear();
+		oss = std::istringstream(argv[3]);
+		oss >> month;
+		oss.clear();
+		oss = std::istringstream(argv[2]);
+		oss >> station_index;
+		oss.clear();
+
+		break;
+	default:
+		break;
+	}
+}
+
+void makeInOutFilenames()
+{
+	stringstream ss;
+	ss.clear();
+	ss = stringstream();
+	ss << s_station_index << '-' << s_year << s_month << ".csv";
+	outfile = outdir + ss.str();
+	infile = curdir + infile;
 }

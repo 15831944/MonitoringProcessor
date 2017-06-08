@@ -15,6 +15,9 @@ public:
 	float getMinTemperature();
 	float getMinTemperature(float Hthr);
 
+	//Количество выбросов(по производной)
+	int getNumSpikes();
+
 	inline float getMaxAltitude()
 	{
 		return maxAltitude;

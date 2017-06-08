@@ -7,6 +7,9 @@
 
 #define MARKS_NUMBER 4
 #define DISPERSION_CALCULATORS 6
+
+#define CALCULATORS 12
+
 class MarkGen
 {
 public:
@@ -74,7 +77,7 @@ public:
 	}
 	inline void setDerivativeCalcThreshold(int num, float thr)
 	{
-		dispersion_calculators[num]->setThresholdValue(thr);
+		derivative_calculators[num]->setThresholdValue(thr);
 	}
 	
 private:

@@ -31,6 +31,7 @@ public:
 	int getMaxDistance();
 	int getKN04Code();
 	int getInfoZondType();
+	int getNumSpikes();
 	float getMinElevation();
 	float getGroundTemperature();
 	float getMinTemperature();
