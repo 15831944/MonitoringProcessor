@@ -451,3 +451,17 @@ int Sounding::getAlt10Elevation()
 	return 0;
 }
 
+int Sounding::getNumSpikes()
+{
+	if (!dayornight)
+	{
+		return (int)rDaM.getNumSpikes();
+	}
+	else
+	{
+		return (int)rDaN.getNumSpikes();
+	}
+	return 0;
+}
+
+

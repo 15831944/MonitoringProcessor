@@ -20,137 +20,32 @@ int _tmain(int argc, _TCHAR* argv[])
 	int i;
 	int mode=1;
 	int radar = 1;
-	vector<bool> settings;
 	//TODO ADD pre-load CSV
-	CSVWorker csvw;
+	
 	day = 1;
 	stringstream ss;
-
-	if(argc <= 1)
-    {
-        std::cout << "usage: " << argv[0] << " filename" << std::endl;
-		std::cout << "usage: " << argv[0] << " yyyy iiiii mm" << std::endl;
-        return 0;
-    }
-
-	INIReader reader("setup.ini");
-
-	if (reader.ParseError() < 0) 
-	{
-		std::cout << "Can't load 'setup.ini'\n";
-		for (i = 0; i != NUMPARAMETERS_STR + NUMPARAMETERS; i++)
-		{
-			settings.push_back(true);
-		}
-	}
-	else
-	{
-		for (i = 0; i != NUMPARAMETERS_STR + NUMPARAMETERS; i++)
-		{
-			ss << "param" << i;
-			bool data = reader.GetBoolean("settings", ss.str(), true);
-			settings.push_back(data);
-			ss.clear();
-			ss = stringstream();
-		}
-
-		MarkGen& mg = MarkGen::Instance();
-		for (i = 0; i != MARKS_NUMBER; i++)
-		{
-			ss << "param" << i;
-			mg.setMarkEnable(i, reader.GetBoolean("MarkGenerator", ss.str(), true));
-			ss.clear();
-			ss = stringstream();
-		}
-
-		for (i = 0; i != DISPERSION_CALCULATORS; i++)
-		{
-			ss << "param" << i;
-			mg.setDispersionCalcThreshold(i, reader.GetReal("DispersionCalculator", ss.str(), 1.0f));
-			ss.clear();
-			ss = stringstream();
-		}
-	}
-
-	
-
-	string infile,infile2;
-	string outfile;
-	
 	std::istringstream oss;
 	size_t pos;
-
-
-
-	switch (argc)
-	{
-	case 2:
-		infile = string(argv[1]);
-		pos = infile.find_last_of('/');
-		if (pos == std::string::npos)
-			pos = 0;
-		oss = std::istringstream(infile.substr(pos, infile.find('-')));
-		oss >> station_index;
-		oss.clear();
-		oss = std::istringstream(infile.substr(infile.find('-') + 1, 4));
-		oss >> year;
-		oss.clear();
-		oss = std::istringstream(infile.substr(infile.find('-') + 5, 2));
-		oss >> month;
-		break;
-	case 4:
-	case 6:
-
-		for (i = 1; i != argc; i++)
-			recognizeToken(string(argv[i]));
-
-		ss << s_year << '/' << s_station_index << '/' << s_station_index << '-' << s_year << s_month;// << radar1[radar] << ".zip";
-		infile = ss.str();
-		ss.clear();
-		ss = stringstream();
-		ss << s_year << '/' << s_station_index << '/' << s_station_index << ' ' << s_year << s_month;// << radar1[radar] << ".zip";
-		infile2 = ss.str();
-
-		oss = std::istringstream(argv[1]);
-		oss >> year;
-		oss.clear();
-		oss = std::istringstream(argv[3]);
-		oss >> month;
-		oss.clear();
-		oss = std::istringstream(argv[2]);
-		oss >> station_index;
-		oss.clear();
-		
-		break;
-	default:
-		break;
-	}
-	
 	string datam[N];
 	string datan[N];
 	string data;
 
-	ss.clear();
-	ss = stringstream();
-	ss << s_station_index << '-' << s_year << s_month<<".csv";
-	outfile = outdir+ss.str();
-	infile = curdir + infile;
+	if (!printUsageStrings(argc, argv))
+		return 0;
+
+	readSetupFile();
+	
+	processInputParameters(argc, argv);
+	
+	makeInOutFilenames();
 
 	string morningstr;
 	string nightstr;
 	try
 	{
 		//TODO CHECK DATA ALREADY EXISTS!!! - OK
-		try
-		{
-			csvw.readCSV(outfile);
-		}
-		catch (...)
-		{
-			ss << "ERROR Reading input file" << endl;
-		}
+		readCSVFile();
 
-		
 		for (radar = 0; radar != NUMRADARS; radar++)
 		{
 			try
@@ -326,6 +221,9 @@ int _tmain(int argc, _TCHAR* argv[])
 								case 11:
 									l.params.push_back((double)s.getAverageWindSpeed());
 									break;
+								case 12:
+									l.params.push_back((double)s.getNumSpikes());
+									break;
 								default:
 									break;
 								}
@@ -361,7 +259,8 @@ int _tmain(int argc, _TCHAR* argv[])
 	{
 		cout << "#4 Unknown error " << infile + radar2[radar] << endl;
 	}
-	system("pause");
+	if (final_prompt)
+		system("pause");
 	return 0;
 }
 

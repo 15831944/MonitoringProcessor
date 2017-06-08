@@ -230,3 +230,14 @@ void RAWData::addString(string str)
 		dc->dataInput(time, mU);
 	}
 }
+
+int RAWData::getNumSpikes()
+{
+	MarkGen& mg = MarkGen::Instance();
+	if (mg.getMarkEnable(3))
+	{
+		return mg.getDerivativeCalculator(0)->numErrors();
+	}
+	else
+		return 0;
+}
