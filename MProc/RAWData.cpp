@@ -214,19 +214,19 @@ void RAWData::addString(string str)
 		dc->dataInput(time, mU);
 	}
 
-	/*if (mg.getMarkEnable(3))
+	if (mg.getMarkEnable(3))
 	{
 		Calculator* dc = mg.getDerivativeCalculator(0);
 		dc->dataInput(time, mH);
-		dc = mg.getDispersionCalculator(1);
+		dc = mg.getDerivativeCalculator(1);
 		dc->dataInput(time, mD);
-		dc = mg.getDispersionCalculator(2);
+		dc = mg.getDerivativeCalculator(2);
 		dc->dataInput(time, mE);
-		dc = mg.getDispersionCalculator(3);
+		dc = mg.getDerivativeCalculator(3);
 		dc->dataInput(time, mA);
-		dc = mg.getDispersionCalculator(4);
+		dc = mg.getDerivativeCalculator(4);
 		dc->dataInput(time, mT);
-		dc = mg.getDispersionCalculator(5);
+		dc = mg.getDerivativeCalculator(5);
 		dc->dataInput(time, mU);
-	}*/
+	}
 }

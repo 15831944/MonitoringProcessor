@@ -231,8 +231,9 @@ int _tmain(int argc, _TCHAR* argv[])
 						s.setDayOrNight(cnt);
 						s.processRAWFile();
 						s.processINFOFile();
-						s.processTAE3File();
-						if (settings[NUMPARAMETERS_STR+2])
+						if (settings[NUMPARAMETERS_STR + 10])
+							s.processTAE3File();
+						if (settings[NUMPARAMETERS_STR + 2])
 							s.processKN04File();
 						//yyyy.mm.dd hh:mm
 						LaunchTime lt;

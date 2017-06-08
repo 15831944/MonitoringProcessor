@@ -245,11 +245,12 @@ void Sounding::processTAE3File()
 			*/
 
 			//Пропустить 9 строк
-			unsigned int newl = tae3File.find('\n');
-			for (int i = 0; i != 9; i++)
+			unsigned int newl = tae3File.find('D');
+			newl = tae3File.find('\n', newl)+1;
+			/*for (int i = 0; i != 9; i++)
 			{
 				newl = tae3File.find('\n', newl) + 1;
-			}
+			}*/
 
 			//конец строки
 			while (newl < tae3File.length()-4)
