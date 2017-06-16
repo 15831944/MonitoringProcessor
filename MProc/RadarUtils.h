@@ -95,6 +95,24 @@ inline void push_back_params(LaunchParameters &l, Sounding s, vector<bool> setti
 	}
 }
 
+int daysInMonth(int month)
+{
+	int numberOfDays;
+	if (month == 4 || month == 6 || month == 9 || month == 11)
+		numberOfDays = 30;
+	else if (month == 2)
+	{
+		bool isLeapYear = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+		if (isLeapYear)
+			numberOfDays = 29;
+		else
+			numberOfDays = 28;
+	}
+	else
+		numberOfDays = 31;
+	return numberOfDays;
+}
+
 inline void printSoundingInformation(int cnt, Sounding s)
 {
 	cout << "-----------------------------------\n SUMMARY INFORMATION" << cnt << endl;
