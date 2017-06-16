@@ -1,4 +1,5 @@
 #include "RadarReader.h"
+#include "RadarUtils.h"
 
 RadarReader::RadarReader()
 {
@@ -23,24 +24,142 @@ void RadarReader::initFromFile(string infile, string infile2)
 	string test_pr = infile;
 	if (!fileExists(infile + mRadarZip))
 		test_pr = infile2;
-	zip_file file(test_pr + mRadarZip);
+	//file = zip_file(test_pr + mRadarZip);
+	file.load(test_pr + mRadarZip);
 	base = file.get_first_filename();
 	if (base.find_last_of('/') != string::npos)
 		base = base.substr(0, base.find_last_of('/')) + "/";
 	else
 		base = "";
+	//file = fil;
 }
 
-void RadarReader::processMonth()
+void RadarReader::setSettings(vector<bool> stngs)
 {
-	for (day = 1; day <= daysInMonth(month); day++)
+	mSettings = stngs;
+}
+
+void RadarReader::setRadarNumber(int radar)
+{
+	mRadarNumber = radar;
+}
+
+string RadarReader::radar_readFormat(zip_file &file, string base, int dayornight, string format)
+{
+	string data;
+	string filename;
+	char prefix[50];
+#ifdef FIND_ALL_FILES
+	if (!dayornight)
+	{
+		for (int j = 0; j != 24; j++)
+		{
+			for (int i = 0; i != 60; i++)
+			{
+				data = try_readFormat(file, base, dayornight, format, "-%02d.%02d%s", j, i);
+				if (!data.empty())
+					return data;
+				data = try_readFormat(file, base, dayornight, format, "-%02d%02d%s", j, i);
+				if (!data.empty())
+					return data;
+			}
+		}
+	}
+	else
+	{
+		if (morning_hour || morning_min)
+		{
+			//WARNING!!!
+			// Если пуск длился менее часа то может возникнуть ошибка, но 
+			// Такое очень редко бывает, наверное даже никогда. 
+			for (int j = morning_hour + 1; j != 24; j++)
+			{
+				for (int i = 0; i != 60; i++)
+				{
+					data = try_readFormat(file, base, dayornight, format, "-%02d.%02d%s", j, i);
+					if (!data.empty())
+						return data;
+					data = try_readFormat(file, base, dayornight, format, "-%02d%02d%s", j, i);
+					if (!data.empty())
+						return data;
+				}
+			}
+		}
+
+	}
+#else
+	for (int i = 30; i != 60; i++)
+	{
+		if (!dayornight)
+		{
+			sprintf_s(prefix, "-11.%02d%s", i, format.c_str());
+			morning_min = i;
+		}
+		else
+		{
+			sprintf_s(prefix, "-23.%02d%s", i, format.c_str());
+			night_min = i;
+		}
+
+		filename = base + string(prefix);
+		try
+		{
+			data = file.read(filename);
+			return data;
+		}
+		catch (...)
+		{
+
+		}
+	}
+	//Vector-M radar
+	for (int i = 30; i != 60; i++)
+	{
+		if (!dayornight)
+		{
+			sprintf_s(prefix, "-11%02d%s", i, format.c_str());
+			morning_min = i;
+		}
+		else
+		{
+			sprintf_s(prefix, "-23%02d%s", i, format.c_str());
+			night_min = i;
+		}
+
+		filename = base + string(prefix);
+		try
+		{
+			data = file.read(filename);
+			return data;
+		}
+		catch (...)
+		{
+
+		}
+	}
+#endif
+
+	throw 1;
+}
+
+void RadarReader::setCSVWorker(CSVWorker* csvw)
+{
+	mCsvw = csvw;
+}
+
+void RadarReader::processMonth(int m, int y)
+{
+	month = m;
+	year = y;
+	int i;
+	for (day = 1; day <= daysInMonth(month,year); day++)
 	{
 		Sounding s;
 		s.setRAWDataIdentifier(mRawPrefix);
 		ss.clear();
 		ss = stringstream();
 
-		if (radar != 2)
+		if (mRadarNumber != 2)
 		{
 			ss << base << day << '.' << month << '.' << year;// << "-11.30";
 		}
@@ -60,7 +179,7 @@ void RadarReader::processMonth()
 			s.setDayOrNight(0);
 			try
 			{
-				data = readFormat(file, morningstr, 0, formats[i]);//file.read(morningstr + formats[i]);
+				data = radar_readFormat(file, morningstr, 0, formats[i]);//file.read(morningstr + formats[i]);
 				datam[i] = data;
 				s.addData(data, formats[i]);
 			}
@@ -73,7 +192,7 @@ void RadarReader::processMonth()
 			s.setDayOrNight(1);
 			try
 			{
-				data = readFormat(file, nightstr, 1, formats[i]);
+				data = radar_readFormat(file, nightstr, 1, formats[i]);
 				datan[i] = data;
 				s.addData(data, formats[i]);
 			}
@@ -121,7 +240,7 @@ void RadarReader::processMonth()
 			MarkGen& mg = MarkGen::Instance();
 
 			LaunchParameters l;
-			l.radarCode = radar1[radar];
+			l.radarCode = mRadarPrefix;
 
 			int t1 = s.getRAWSoundingTime();
 			int t2 = s.getSoundingTime();
@@ -131,7 +250,7 @@ void RadarReader::processMonth()
 			push_back_params(l, s, mSettings, error_str);
 
 			if (t1 || t2)
-				csvw.addLaunch(cnt, lt, l);
+				mCsvw->addLaunch(cnt, lt, l);
 			printSoundingInformation(cnt, s);
 			mg.clearCalcs();
 		}

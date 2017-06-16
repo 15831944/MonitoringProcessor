@@ -95,7 +95,7 @@ inline void push_back_params(LaunchParameters &l, Sounding s, vector<bool> setti
 	}
 }
 
-int daysInMonth(int month)
+int daysInMonth(int month, int year)
 {
 	int numberOfDays;
 	if (month == 4 || month == 6 || month == 9 || month == 11)

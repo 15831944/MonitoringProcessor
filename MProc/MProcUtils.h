@@ -4,7 +4,7 @@
 #include "Sounding.h"
 #include "CSVWorker.h"
 #include "INIReader.h"
-#include "RadarUtils.h"
+//#include "RadarUtils.h"
 
 #ifndef MPROCUTILS_H
 #define MPROCUTILS_H
@@ -20,21 +20,21 @@ string outdir = "";
 string error_str;
 string infile, infile2;
 string outfile;
-CSVWorker csvw;
+CSVWorker* csvw;
 bool final_prompt;
 
 vector<bool> settings;
 
 //#define FIND_ALL_FILES
 
-int daysInMonth(int month)
+/*int daysInMonth(int month,int y)
 {
 	int numberOfDays;
 	if (month == 4 || month == 6 || month == 9 || month == 11)
 		numberOfDays = 30;
 	else if (month == 2)
 	{
-		bool isLeapYear = (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+		bool isLeapYear = (y % 4 == 0 && y % 100 != 0) || (year % 4 == 0);
 		if (isLeapYear)
 			numberOfDays = 29;
 		else
@@ -43,7 +43,7 @@ int daysInMonth(int month)
 	else
 		numberOfDays = 31;
 	return numberOfDays;
-}
+}*/
 
 string try_readFormat(zip_file &file, string base, int dayornight, string format, string formattedString, int hour, int minute)
 {
@@ -192,8 +192,6 @@ string readFormat(zip_file &file, string base, int dayornight, string format)
 	throw 1;
 }
 
-#endif
-
 int strToInt(string myString)
 {
 	istringstream buffer(myString);
@@ -296,16 +294,16 @@ bool printUsageStrings(int argc, _TCHAR* argv[])
 }
 
 void readCSVFile()
-{ 
+{
 	stringstream ss;
 	try
 	{
-		csvw.readCSV(outfile);
+		csvw->readCSV(outfile);
 	}
 	catch (...)
 	{
 		ss << "ERROR Reading input file" << endl;
-	} 
+	}
 }
 
 void processInputParameters(int argc, _TCHAR* argv[])
@@ -369,3 +367,6 @@ void makeInOutFilenames()
 	outfile = outdir + ss.str();
 	infile = curdir + infile;
 }
+
+#endif
+
