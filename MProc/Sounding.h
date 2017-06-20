@@ -4,6 +4,9 @@
 #include "stdafx.h"
 #include "RAWData.h"
 #include "TAE3.h"
+#include "DayFormats.h"
+
+//Класс со всеми зондированиями за день.
 
 class Sounding
 {
@@ -12,14 +15,21 @@ public:
 	{
 		mRawData = ".RAW";
 		infozond1 = infozond2 = 0;
+		type = 0;
 	};
 	~Sounding()
 	{
 
 	};
 	
+	// Так как схема с 2 пусками за день не оправдала себя, 
+	// Вводится новый режим функционирования.
+	// Тип - 1 - новый.
+	// Тип - 0 - старый.
+	void setOperationType(int t);
 	void setRAWDataIdentifier(string rdata);
 	void setDayOrNight(char dayornight);
+	void setNewTime(LaunchTime newlTime);
 	void addData(string data, string format);
 	bool hasFormat(string format);
 	string getFormat(string format);
@@ -44,6 +54,7 @@ public:
 	void processTAE3File();
 	void processINFOFile();
 private:
+	int type;
 	RAWData rDaM;  /*morning*/
 	RAWData rDaN; /* night */
 	TAE3 tDaM;  /*morning*/
@@ -61,6 +72,8 @@ private:
 	int infozond2;
 	map<string, string> mDataDay;
 	map<string, string> mDataNight;
+	LaunchTime curLaunchTime; //для нового режима функционирования
+	map<LaunchTime,DayFormats*> mAllData; //для нового режима функционирования
 };
 
 #endif

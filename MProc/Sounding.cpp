@@ -2,25 +2,40 @@
 
 void Sounding::addData(string data, string format)
 {
-	if (!dayornight)
+	if (!type)
 	{
-		mDataDay[format] = data;
+		if (!dayornight)
+		{
+			mDataDay[format] = data;
+		}
+		else
+		{
+			mDataNight[format] = data;
+		}
 	}
 	else
 	{
-		mDataNight[format] = data;
+		mAllData[curLaunchTime]->addData(data, format);
 	}
+	
 }
 
 bool Sounding::hasFormat(string format)
 {
-	if (!dayornight)
+	if (!type)
 	{
-		return mDataDay[format].length()>0;
+		if (!dayornight)
+		{
+			return mDataDay[format].length() > 0;
+		}
+		else
+		{
+			return mDataNight[format].length() > 0;
+		}
 	}
 	else
 	{
-		return mDataNight[format].length()>0;
+		return mAllData[curLaunchTime]->hasFormat(format);
 	}
 	return 0;
 }
@@ -53,13 +68,20 @@ string Sounding::getFormatsTelegram()
 
 string Sounding::getFormat(string format)
 {
-	if (!dayornight)
+	if (!type)
 	{
-		return mDataDay[format];
+		if (!dayornight)
+		{
+			return mDataDay[format];
+		}
+		else
+		{
+			return mDataNight[format];
+		}
 	}
 	else
 	{
-		return mDataNight[format];
+		return mAllData[curLaunchTime]->getFormat(format);
 	}
 	return "";
 }
@@ -107,6 +129,16 @@ string Sounding::getKN04file()
 		return getFormat(".KN4");
 	}
 	return "";
+}
+
+void Sounding::setOperationType(int t)
+{
+	type = t;
+}
+
+void Sounding::setNewTime(LaunchTime newlTime)
+{
+	curLaunchTime = newlTime;
 }
 
 string Sounding::getINFOfile()
@@ -157,10 +189,17 @@ void Sounding::processINFOFile()
 			string last_str = infoFile.substr(newl, infoFile.find('\n', newl) - newl);
 			int zond_type = 0;
 			sscanf_s(last_str.c_str(), "%d", &zond_type);
-			if (!dayornight)
-				infozond1 = zond_type;
+			if (!type)
+			{
+				if (!dayornight)
+					infozond1 = zond_type;
+				else
+					infozond2 = zond_type;
+			}
 			else
-				infozond2 = zond_type;
+			{
+				mAllData[curLaunchTime]->infozond = zond_type;
+			}
 		}
 	}
 	catch (...)
@@ -171,13 +210,20 @@ void Sounding::processINFOFile()
 
 int Sounding::getInfoZondType()
 {
-	if (!dayornight)
+	if (!type)
 	{
-		return infozond1;
+		if (!dayornight)
+		{
+			return infozond1;
+		}
+		else
+		{
+			return infozond2;
+		}
 	}
 	else
 	{
-		return infozond2;
+		return mAllData[curLaunchTime]->infozond;
 	}
 }
 
@@ -208,10 +254,18 @@ void Sounding::processRAWFile()
 			while (newl < rawFile.length())
 			{
 				string last_str = rawFile.substr(newl, rawFile.find('\n', newl) - newl);
-				if (!dayornight)
-					rDaM.addString(last_str);
+				if (!type)
+				{
+					if (!dayornight)
+						rDaM.addString(last_str);
+					else
+						rDaN.addString(last_str);
+				}
 				else
-					rDaN.addString(last_str);
+				{
+					mAllData[curLaunchTime]->rDa.addString(last_str);
+				}
+				
 				newl = rawFile.find('\n', newl) + 1;
 			}
 
@@ -256,16 +310,31 @@ void Sounding::processTAE3File()
 			while (newl < tae3File.length()-4)
 			{
 				string last_str = tae3File.substr(newl, tae3File.find('\n', newl) - newl);
-				if (!dayornight)
-					tDaM.addString(last_str);
+				if (!type)
+				{
+					if (!dayornight)
+						tDaM.addString(last_str);
+					else
+						tDaN.addString(last_str);
+				}
 				else
-					tDaN.addString(last_str);
+				{
+					mAllData[curLaunchTime]->tDa.addString(last_str);
+				}
 				newl = tae3File.find('\n', newl) + 1;
 			}
-			if (!dayornight)
-				tDaM.compute();
+
+			if (!type)
+			{
+				if (!dayornight)
+					tDaM.compute();
+				else
+					tDaN.compute();
+			}
 			else
-				tDaN.compute();
+			{
+				mAllData[curLaunchTime]->tDa.compute();
+			}
 
 
 		}
@@ -279,9 +348,16 @@ void Sounding::processTAE3File()
 
 int Sounding::getKN04Code()
 {
-	if (!dayornight)
-		return KN04Code1;
-	return KN04Code2;
+	if (!type)
+	{
+		if (!dayornight)
+			return KN04Code1;
+		return KN04Code2;
+	}
+	else
+	{
+		return mAllData[curLaunchTime]->KN04Code;
+	}
 }
 
 void Sounding::processKN04File()
@@ -296,10 +372,17 @@ void Sounding::processKN04File()
 			
 			string code = rawFile.substr(newl+6,5);
 			istringstream is(code);
-			if (!dayornight)
-				is >> KN04Code1;
+			if (!type)
+			{
+				if (!dayornight)
+					is >> KN04Code1;
+				else
+					is >> KN04Code2;
+			}
 			else
-				is >> KN04Code2;
+			{
+				is >> mAllData[curLaunchTime]->KN04Code;
+			}
 		}
 	}
 	catch (...)
@@ -313,13 +396,20 @@ float Sounding::getAverageWindDirection()
 {
 	try
 	{
-		if (!dayornight)
+		if (!type)
 		{
-			return tDaM.getAverageWindDirection();
+			if (!dayornight)
+			{
+				return tDaM.getAverageWindDirection();
+			}
+			else
+			{
+				return tDaN.getAverageWindDirection();
+			}
 		}
 		else
 		{
-			return tDaN.getAverageWindDirection();
+			mAllData[curLaunchTime]->tDa.getAverageWindDirection();
 		}
 	}
 	catch (...)
@@ -332,13 +422,20 @@ float Sounding::getAverageWindSpeed()
 {
 	try
 	{
-		if (!dayornight)
+		if (!type)
 		{
-			return tDaM.getAverageWindSpeed();
+			if (!dayornight)
+			{
+				return tDaM.getAverageWindSpeed();
+			}
+			else
+			{
+				return tDaN.getAverageWindSpeed();
+			}
 		}
 		else
 		{
-			return tDaN.getAverageWindSpeed();
+			mAllData[curLaunchTime]->tDa.getAverageWindSpeed();
 		}
 	}
 	catch (...)
