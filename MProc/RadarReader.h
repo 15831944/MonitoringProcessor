@@ -19,10 +19,16 @@ public:
 	void setSettings(vector<bool> stngs);
 private:
 	string radar_readFormat(zip_file &file, string base, int dayornight, string format);
+	string radar_readFormat(zip_file &file, string base);
 	void radar_processFormats(Sounding &s);
+	void radar_processFormats(Sounding &s, vector<string> names);
 	void radar_processLaunch(Sounding &s, LaunchTime &lt1, LaunchTime &lt2, int cnt);
 	void radar_makeDayNightStrings();
 	vector<string> radar_makeTimeStrings(vector<string> names);
+	map<string, string> radar_makeTimeFormatStrings(vector<string> names);
+	vector<string> radar_makeFormatStrings(vector<string> names);
+	string separateFormatFromPath(string fullname);
+	LaunchTime getLaunchTimeFromString(string filename);
 	string mRadarName;
 	string mRadarPrefix;
 	string mRadarZip;

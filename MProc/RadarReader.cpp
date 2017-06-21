@@ -44,6 +44,14 @@ void RadarReader::setRadarNumber(int radar)
 	mRadarNumber = radar;
 }
 
+string RadarReader::radar_readFormat(zip_file &file, string base)
+{
+	string data;
+	string filename = base;
+	data = file.read(filename);
+	return data;
+}
+
 string RadarReader::radar_readFormat(zip_file &file, string base, int dayornight, string format)
 {
 	string data;
@@ -293,7 +301,134 @@ vector<string> RadarReader::radar_makeTimeStrings(vector<string> names)
 		ss << base << string(date);
 	}
 	string base_str = ss.str();
-	result.push_back(base_str);
+	for (auto i : names)
+	{
+		string cur_name = (i);
+		size_t found = cur_name.find(base_str);
+		size_t dot_found = cur_name.find('.');
+		if (found != std::string::npos)
+		{
+			if (found != 0)
+			{
+				if (i[found - 1] != '\\')
+					continue;
+			}
+			char buf[6];
+			cur_name.copy(buf, 5, found + base_str.length() + 1);
+			buf[5] = '\0';
+			if (buf[4] == '.')
+				buf[4] = '\0';
+			result.push_back(string(buf));
+		}
+	}
+	return result;
+}
+
+map<string, string> RadarReader::radar_makeTimeFormatStrings(vector<string> names)
+{
+	map<string,string> result;
+	ss.clear();
+	ss = stringstream();
+
+	if (mRadarNumber != 2)
+	{
+		ss << day << '.' << month << '.' << year;// << "-11.30";
+	}
+	else
+	{
+		char date[10];
+		sprintf_s(date, "%04d%02d%02d", year, month, day);
+		ss << base << string(date);
+	}
+	string base_str = ss.str();
+	for (auto i : names)
+	{
+		string cur_name = (i);
+		size_t found = cur_name.find(base_str);
+		size_t dot_found = cur_name.find('.');
+		if (found != std::string::npos)
+		{
+			if (found != 0)
+			{
+				if (i[found - 1] != '\\')
+					continue;
+			}
+			char buf[6];
+			cur_name.copy(buf, 5, found + base_str.length() + 1);
+			buf[5] = '\0';
+			if (buf[4] == '.')
+				buf[4] = '\0';
+			result[string(buf)] = "format";
+		}
+	}
+	return result;
+}
+
+vector<string> RadarReader::radar_makeFormatStrings(vector<string> names)
+{
+	vector<string> result;
+	ss.clear();
+	ss = stringstream();
+
+	if (mRadarNumber != 2)
+	{
+		ss << day << '.' << month << '.' << year;// << "-11.30";
+	}
+	else
+	{
+		char date[10];
+		sprintf_s(date, "%04d%02d%02d", year, month, day);
+		ss << base << string(date);
+	}
+	string base_str = ss.str();
+	for (auto i : names)
+	{
+		string cur_name = (i);
+		size_t found = cur_name.find(base_str);
+		size_t dot_found = cur_name.find('.');
+		if (found != std::string::npos)
+		{
+			if (found != 0)
+			{
+				if (i[found - 1] != '\\')
+					continue;
+			}
+			result.push_back(i);
+		}
+	}
+	return result;
+}
+
+string RadarReader::separateFormatFromPath(string fullname)
+{
+	size_t lastindex = fullname.find_last_of(".");
+	if (lastindex != std::string::npos)
+	{
+		string rawname = fullname.substr(lastindex,fullname.length-lastindex);
+		return rawname;
+	}
+	size_t lastindex = fullname.find_last_of(".AB..GROUND"); //Костыль, который фиг исправишь. 
+	if (lastindex != std::string::npos)
+	{
+		string rawname = ".AB..GROUND";
+		return rawname;
+	}
+	return "";
+}
+
+void RadarReader::radar_processFormats(Sounding &s, vector<string> names)
+{
+	for (auto i : names)
+	{
+		s.setNewTime(getLaunchTimeFromString(i));
+		data = radar_readFormat(file, i);//file.read(morningstr + formats[i]);
+		s.addData(data, separateFormatFromPath(i));
+	}
+}
+
+LaunchTime RadarReader::getLaunchTimeFromString(string filename)
+{
+	LaunchTime result;
 	return result;
 }
 
@@ -308,7 +443,8 @@ void RadarReader::processMonthInd(int m, int y)
 		Sounding s; // Класс "Зондирование" за один день.
 		s.setRAWDataIdentifier(mRawPrefix); //Устанавливаем префикс файла RAW так как не стандартизирован
 		//file.printdir();
-		vector<string> times_from_day = radar_makeTimeStrings(names);
+		vector<string> times_from_day = radar_makeFormatStrings(names);
+		//map<string, string> tim_f_day = radar_makeTimeFormatStrings(names);
 		system("pause");
 	}
 }
