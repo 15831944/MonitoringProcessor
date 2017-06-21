@@ -58,7 +58,7 @@ int _tmain(int argc, _TCHAR* argv[])
 				mReader->init(radar1[radar], radar2[radar], raw_radar[radar], radar_name[radar]);
 				mReader->initFromFile(infile, infile2);
 				mReader->setRadarNumber(radar);
-				mReader->processMonth(month, year);
+				mReader->processMonthInd(month, year);
 			}
 			catch (...)
 			{

@@ -446,117 +446,180 @@ float Sounding::getAverageWindSpeed()
 
 int Sounding::getRAWSoundingTime()
 {
-	if (!dayornight)
+	if (!type)
 	{
-		return (int)rDaM.getSoundingTime();
+		if (!dayornight)
+		{
+			return (int)rDaM.getSoundingTime();
+		}
+		else
+		{
+			return (int)rDaN.getSoundingTime();
+		}
 	}
 	else
 	{
-		return (int)rDaN.getSoundingTime();
+		return (int)(mAllData[curLaunchTime]->rDa.getSoundingTime());
 	}
 	return 0;
 }
 
 int Sounding::getMaxAltitude()
 {
-	if (!dayornight)
+	if (!type)
 	{
-		return (int)rDaM.getMaxAltitude();
+		if (!dayornight)
+		{
+			return (int)rDaM.getMaxAltitude();
+		}
+		else
+		{
+			return (int)rDaN.getMaxAltitude();
+		}
 	}
 	else
 	{
-		return (int)rDaN.getMaxAltitude();
+		return (int)(mAllData[curLaunchTime]->rDa.getMaxAltitude());
 	}
 	return 0;
 }
 
 int Sounding::getMaxDistance()
 {
-	if (!dayornight)
+	if (!type)
 	{
-		return (int)rDaM.getMaxDistance();
+		if (!dayornight)
+		{
+			return (int)rDaM.getMaxDistance();
+		}
+		else
+		{
+			return (int)rDaN.getMaxDistance();
+		}
 	}
 	else
 	{
-		return (int)rDaN.getMaxDistance();
+		return (int)(mAllData[curLaunchTime]->rDa.getMaxDistance());
 	}
 	return 0;
 }
 
 float Sounding::getMinElevation()
 {
-	if (!dayornight)
+	if (!type)
 	{
-		return rDaM.getMinElevation();
+		if (!dayornight)
+		{
+			return rDaM.getMinElevation();
+		}
+		else
+		{
+			return rDaN.getMinElevation();
+		}
 	}
 	else
 	{
-		return rDaN.getMinElevation();
+		return (int)(mAllData[curLaunchTime]->rDa.getMinElevation());
 	}
 	return 0;
 }
 
 float Sounding::getGroundTemperature()
 {
-	if (!dayornight)
+	if (!type)
 	{
-		return rDaM.getGroundTemperature();
+		if (!dayornight)
+		{
+			return rDaM.getGroundTemperature();
+		}
+		else
+		{
+			return rDaN.getGroundTemperature();
+		}
 	}
 	else
 	{
-		return rDaN.getGroundTemperature();
+		return mAllData[curLaunchTime]->rDa.getGroundTemperature();
 	}
 	return 0;
 }
 
 float Sounding::getMinTemperature()
 {
-	if (!dayornight)
+	if (!type)
 	{
-		return rDaM.getMinTemperature();
+		if (!dayornight)
+		{
+			return rDaM.getMinTemperature();
+		}
+		else
+		{
+			return rDaN.getMinTemperature();
+		}
 	}
 	else
 	{
-		return rDaN.getMinTemperature();
+		return mAllData[curLaunchTime]->rDa.getMinTemperature();
 	}
 	return 0;
 }
 
 float Sounding::getMinTemperature(float H)
 {
-	if (!dayornight)
+	if (!type)
 	{
-		return rDaM.getMinTemperature(H);
+		if (!dayornight)
+		{
+			return rDaM.getMinTemperature(H);
+		}
+		else
+		{
+			return rDaN.getMinTemperature(H);
+		}
 	}
 	else
 	{
-		return rDaN.getMinTemperature(H);
+		return mAllData[curLaunchTime]->rDa.getMinTemperature();
 	}
 	return 0;
 }
 
 int Sounding::getAlt10Elevation()
 {
-	if (!dayornight)
+	if (!type)
 	{
-		return (int)rDaM.getAlt10Elevation();
+		if (!dayornight)
+		{
+			return (int)rDaM.getAlt10Elevation();
+		}
+		else
+		{
+			return (int)rDaN.getAlt10Elevation();
+		}
 	}
 	else
 	{
-		return (int)rDaN.getAlt10Elevation();
+		return (int)(mAllData[curLaunchTime]->rDa.getAlt10Elevation());
 	}
 	return 0;
 }
 
 int Sounding::getNumSpikes()
 {
-	if (!dayornight)
+	if (!type)
 	{
-		return (int)rDaM.getNumSpikes();
+		if (!dayornight)
+		{
+			return (int)rDaM.getNumSpikes();
+		}
+		else
+		{
+			return (int)rDaN.getNumSpikes();
+		}
 	}
 	else
 	{
-		return (int)rDaN.getNumSpikes();
+		return (int)(mAllData[curLaunchTime]->rDa.getNumSpikes());
 	}
 	return 0;
 }

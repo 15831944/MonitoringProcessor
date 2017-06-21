@@ -180,7 +180,7 @@ void RadarReader::radar_processFormats(Sounding &s)
 		}
 	}
 
-	file.get_first_filename
+	//file.get_first_filename
 }
 
 void RadarReader::radar_processLaunch(Sounding &s, LaunchTime &lt1, LaunchTime &lt2,int cnt)
@@ -276,16 +276,39 @@ void RadarReader::processMonth(int m, int y)
 	}
 }
 
+vector<string> RadarReader::radar_makeTimeStrings(vector<string> names)
+{
+	vector<string> result;
+	ss.clear();
+	ss = stringstream();
+
+	if (mRadarNumber != 2)
+	{
+		ss << day << '.' << month << '.' << year;// << "-11.30";
+	}
+	else
+	{
+		char date[10];
+		sprintf_s(date, "%04d%02d%02d", year, month, day);
+		ss << base << string(date);
+	}
+	string base_str = ss.str();
+	result.push_back(base_str);
+	return result;
+}
+
 void RadarReader::processMonthInd(int m, int y)
 {
 	month = m;
 	year = y;
 	int i;
+	vector<string> names = file.namelist();
 	for (day = 1; day <= daysInMonth(month, year); day++)
 	{
 		Sounding s; // Класс "Зондирование" за один день.
 		s.setRAWDataIdentifier(mRawPrefix); //Устанавливаем префикс файла RAW так как не стандартизирован
-
-		
+		//file.printdir();
+		vector<string> times_from_day = radar_makeTimeStrings(names);
+		system("pause");
 	}
 }

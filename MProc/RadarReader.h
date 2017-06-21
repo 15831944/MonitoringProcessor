@@ -22,6 +22,7 @@ private:
 	void radar_processFormats(Sounding &s);
 	void radar_processLaunch(Sounding &s, LaunchTime &lt1, LaunchTime &lt2, int cnt);
 	void radar_makeDayNightStrings();
+	vector<string> radar_makeTimeStrings(vector<string> names);
 	string mRadarName;
 	string mRadarPrefix;
 	string mRadarZip;
