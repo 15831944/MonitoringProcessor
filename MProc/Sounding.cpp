@@ -528,7 +528,7 @@ float Sounding::getMinElevation()
 	}
 	else
 	{
-		return (int)(mAllData[curLaunchTime]->rDa.getMinElevation());
+		return (mAllData[curLaunchTime]->rDa.getMinElevation());
 	}
 	return 0;
 }

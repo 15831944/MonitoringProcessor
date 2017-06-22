@@ -405,19 +405,45 @@ vector<string> RadarReader::radar_makeFormatStrings(vector<string> names)
 
 string RadarReader::separateFormatFromPath(string fullname)
 {
+	for (int i = 0; i != N; i++)
+	{
+		size_t lastindex = fullname.find(formats[i]); 
+		size_t orginfo = fullname.find(".org.info"); //Костыль
+		size_t prof1 = fullname.find(".prof.1"); //Костыль
+		if (lastindex != std::string::npos)  //тут prof, info
+		{
+			if ((orginfo == std::string::npos) && (prof1 == std::string::npos)) //только info
+				return formats[i];  
+		}
+		if (prof1 != std::string::npos) //только prof
+			return ".prof.1";
+	}
+	
+	/*
+
+	//Плохо работает
 	size_t lastindex = fullname.find_last_of(".");
 	if (lastindex != std::string::npos)
 	{
 		string rawname = fullname.substr(lastindex,fullname.length()-lastindex);
 		return rawname;
 	}
-	lastindex = fullname.find(".AB..GROUND"); //Костыль, который фиг исправишь. 
-	if (lastindex != std::string::npos)
-	{
-		string rawname = ".AB..GROUND";
-		return rawname;
-	}
+	*/
+	
 	return "";
+}
+
+string RadarReader::removeFormatFromPath(string fullname)
+{
+	for (int i = 0; i != N; i++)
+	{
+		size_t lastindex = fullname.find(formats[i]); //Костыль, который фиг исправишь. 
+		if (lastindex != std::string::npos)
+		{
+			return fullname.substr(0,lastindex);
+		}
+	}
+	return fullname;
 }
 
 void RadarReader::radar_processFormats(Sounding &s, vector<string> names)
@@ -430,26 +456,34 @@ void RadarReader::radar_processFormats(Sounding &s, vector<string> names)
 	}
 }
 
-LaunchTime RadarReader::getLaunchTimeFromString(string filename)
+LaunchTime RadarReader::getLaunchTimeFromString(string filenam)
 {
 	LaunchTime res;
+	string filename = removeFormatFromPath(filenam); //удалили все известные форматы, но возможно, ещё что-то осталось.
 	string timestr="";
-	size_t dot = filename.find_last_of(".");
-	size_t abground = filename.find(".AB..GROUND");
+	
+	//size_t abground = filename.find(".AB..GROUND");
 	size_t tire = filename.find_last_of("-");
 	if (tire != std::string::npos)
 	{
-		if (abground != std::string::npos)
+		/*if (abground != std::string::npos)
 		{
 			timestr = filename.substr(tire+1, abground - tire-1);
-		}
-		else
-		{
-			if (dot != std::string::npos)
-			{
-				timestr = filename.substr(tire+1, dot - tire-1);
-			}
-		}
+		}*/
+		//else
+		//{
+			//if (dot != std::string::npos)
+			//{
+				timestr = filename.substr(tire+1, filename.length()-1-tire);
+			//}
+		//}
+	}
+	size_t dot = timestr.find_last_of(".");
+	size_t dot2 = timestr.find_first_of(".");
+	while (dot2 != dot) //Если ещё что то осталось.
+	{
+		timestr = timestr.substr(0, dot);
+		dot = timestr.find_last_of(".");
 	}
 	res.launchTime = timestr;
 	return res;

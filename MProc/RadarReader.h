@@ -29,6 +29,7 @@ private:
 	map<string, string> radar_makeTimeFormatStrings(vector<string> names);
 	vector<string> radar_makeFormatStrings(vector<string> names);
 	string separateFormatFromPath(string fullname);
+	string removeFormatFromPath(string fullname);
 	LaunchTime getLaunchTimeFromString(string filename);
 	string mRadarName;
 	string mRadarPrefix;
