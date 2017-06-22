@@ -388,10 +388,14 @@ vector<string> RadarReader::radar_makeFormatStrings(vector<string> names)
 		size_t dot_found = cur_name.find('.');
 		if (found != std::string::npos)
 		{
-			if (found != 0)
+			//Нужно как то разделить строки например 1.03.2016 и 11.03.2016
+			if (found != 0) //если строка не ровно 1.03.2016******
 			{
-				if (i[found - 1] != '\\')
-					continue;
+				if (i[found - 1] != '0') //то предшествующим символом должен быть ноль
+				{
+					if ((i[found - 1] != '\\') && (i[found - 1] != '/'))//но это не ноль, и не слеш.
+						continue;
+				}
 			}
 			result.push_back(i);
 		}
@@ -404,10 +408,10 @@ string RadarReader::separateFormatFromPath(string fullname)
 	size_t lastindex = fullname.find_last_of(".");
 	if (lastindex != std::string::npos)
 	{
-		string rawname = fullname.substr(lastindex,fullname.length-lastindex);
+		string rawname = fullname.substr(lastindex,fullname.length()-lastindex);
 		return rawname;
 	}
-	size_t lastindex = fullname.find_last_of(".AB..GROUND"); //Костыль, который фиг исправишь. 
+	lastindex = fullname.find(".AB..GROUND"); //Костыль, который фиг исправишь. 
 	if (lastindex != std::string::npos)
 	{
 		string rawname = ".AB..GROUND";
@@ -420,16 +424,74 @@ void RadarReader::radar_processFormats(Sounding &s, vector<string> names)
 {
 	for (auto i : names)
 	{
-		s.setNewTime(getLaunchTimeFromString(i));
+		s.setNewTime(getLaunchTimeFromString(i)); //Получим время из названия файла и установим как текущее
 		data = radar_readFormat(file, i);//file.read(morningstr + formats[i]);
-		s.addData(data, separateFormatFromPath(i));
+		s.addData(data, separateFormatFromPath(i)); 
 	}
 }
 
 LaunchTime RadarReader::getLaunchTimeFromString(string filename)
 {
-	LaunchTime result;
-	return result;
+	LaunchTime res;
+	string timestr="";
+	size_t dot = filename.find_last_of(".");
+	size_t abground = filename.find(".AB..GROUND");
+	size_t tire = filename.find_last_of("-");
+	if (tire != std::string::npos)
+	{
+		if (abground != std::string::npos)
+		{
+			timestr = filename.substr(tire+1, abground - tire-1);
+		}
+		else
+		{
+			if (dot != std::string::npos)
+			{
+				timestr = filename.substr(tire+1, dot - tire-1);
+			}
+		}
+	}
+	res.launchTime = timestr;
+	return res;
+}
+
+void RadarReader::radar_processLaunch(Sounding &s)
+{
+	int cnt = 0;
+	for (auto st : s.mAllData)
+	{
+		LaunchTime lt1;
+		lt1.tm_day = day;
+		lt1.tm_mon = month;
+		lt1.tm_year = year;
+		lt1.launchTime = st.first;
+		s.setNewTime(lt1);
+		s.processRAWFile();
+		s.processINFOFile();
+		if (mSettings[NUMPARAMETERS_STR + 10])
+			s.processTAE3File();
+		if (mSettings[NUMPARAMETERS_STR + 2])
+			s.processKN04File();
+
+		MarkGen& mg = MarkGen::Instance();
+
+		LaunchParameters l;
+		l.radarCode = mRadarPrefix;
+
+		int t1 = s.getRAWSoundingTime();
+		int t2 = s.getSoundingTime();
+
+		mg.setSoundingTime(t2);
+
+		push_back_params(l, s, mSettings, error_str);
+
+		if (t1 || t2)
+			mCsvw->addLaunch(lt1, l);
+
+		printSoundingInformation(cnt, s);
+		mg.clearCalcs();
+		cnt++;
+	}
 }
 
 void RadarReader::processMonthInd(int m, int y)
@@ -441,10 +503,11 @@ void RadarReader::processMonthInd(int m, int y)
 	for (day = 1; day <= daysInMonth(month, year); day++)
 	{
 		Sounding s; // Класс "Зондирование" за один день.
+		s.setOperationType(1);
 		s.setRAWDataIdentifier(mRawPrefix); //Устанавливаем префикс файла RAW так как не стандартизирован
-		//file.printdir();
-		vector<string> times_from_day = radar_makeFormatStrings(names);
-		//map<string, string> tim_f_day = radar_makeTimeFormatStrings(names);
-		system("pause");
+		vector<string> times_from_day = radar_makeFormatStrings(names); //создадим вектор файлов за день
+		radar_processFormats(s, times_from_day);
+		radar_processLaunch(s);
+		//system("pause");
 	}
 }

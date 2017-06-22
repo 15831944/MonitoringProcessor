@@ -14,7 +14,11 @@
 class DayFormats
 {
 public:
-	DayFormats(){};
+	DayFormats()
+	{
+		KN04Code = 0;
+		infozond = 0;
+	};
 	~DayFormats(){};
 	void addData(string data, string format);
 	void setLaunchTime(LaunchTime lt);

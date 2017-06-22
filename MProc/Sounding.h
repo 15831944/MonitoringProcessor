@@ -53,6 +53,7 @@ public:
 	void processKN04File();
 	void processTAE3File();
 	void processINFOFile();
+	map<StringLaunchTime, DayFormats*> mAllData; //для нового режима функционирования
 private:
 	int type;
 	RAWData rDaM;  /*morning*/
@@ -72,8 +73,7 @@ private:
 	int infozond2;
 	map<string, string> mDataDay;
 	map<string, string> mDataNight;
-	LaunchTime curLaunchTime; //для нового режима функционирования
-	map<LaunchTime,DayFormats*> mAllData; //для нового режима функционирования
+	StringLaunchTime curLaunchTime; //для нового режима функционирования
 };
 
 #endif

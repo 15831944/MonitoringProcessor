@@ -15,7 +15,16 @@ void Sounding::addData(string data, string format)
 	}
 	else
 	{
-		mAllData[curLaunchTime]->addData(data, format);
+		if (!mAllData[curLaunchTime])
+		{
+			DayFormats* df = new DayFormats;
+			df->addData(data, format);
+			mAllData[curLaunchTime] = df;
+		}
+		else
+		{
+			mAllData[curLaunchTime]->addData(data, format);
+		}
 	}
 	
 }
@@ -138,7 +147,7 @@ void Sounding::setOperationType(int t)
 
 void Sounding::setNewTime(LaunchTime newlTime)
 {
-	curLaunchTime = newlTime;
+	curLaunchTime = newlTime.launchTime;
 }
 
 string Sounding::getINFOfile()

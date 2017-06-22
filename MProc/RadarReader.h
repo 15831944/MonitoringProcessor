@@ -23,6 +23,7 @@ private:
 	void radar_processFormats(Sounding &s);
 	void radar_processFormats(Sounding &s, vector<string> names);
 	void radar_processLaunch(Sounding &s, LaunchTime &lt1, LaunchTime &lt2, int cnt);
+	void radar_processLaunch(Sounding &s);
 	void radar_makeDayNightStrings();
 	vector<string> radar_makeTimeStrings(vector<string> names);
 	map<string, string> radar_makeTimeFormatStrings(vector<string> names);

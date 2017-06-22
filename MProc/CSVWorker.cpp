@@ -17,6 +17,20 @@ void CSVWorker::addLaunch(int dayornight, LaunchTime lTime, LaunchParameters lPa
 		monthDataNight[lTime] = lParams;
 }
 
+void CSVWorker::addLaunch(LaunchTime lTime, LaunchParameters lParams)
+{
+	LaunchTime lt = lTime;
+	lt.parseLaunchTime();
+	if (lt.isDayLaunch())
+		monthDataDay[lt] = lParams;
+	else if (lt.isNightLaunch())
+		monthDataNight[lt] = lParams;
+	else
+	{
+		monthData[lt] = lParams;
+	}
+}
+
 bool CSVWorker::hasLaunch(LaunchTime lTime)
 {
 	if (monthDataDay[lTime].radarCode.length() > 0)
@@ -75,10 +89,22 @@ void CSVWorker::readCSV(string filename)
 				lt = parseTime(datetime);
 			}
 			catch (...){}
+
+			/*
+			
 			if (lt.tm_hour > 10 && lt.tm_hour < 20)
 				monthDataDay[lt] = lp;
 			else
 				monthDataNight[lt] = lp;
+
+			*/
+
+			if (lt.isDayLaunch())
+				monthDataDay[lt] = lp;
+			else if (lt.isNightLaunch())
+				monthDataNight[lt] = lp;
+			else
+				monthData[lt] = lp;
 		}
 	}
 	else
@@ -121,6 +147,11 @@ void CSVWorker::writeLaunch(csv::ofstream &os, LaunchTime lt, LaunchParameters l
 	os << NEWLINE;
 }
 
+void CSVWorker::setOperationType(int t)
+{
+	type = t;
+}
+
 void CSVWorker::writeCSV(string filename)
 {
 	csv::ofstream os(filename);
@@ -128,6 +159,8 @@ void CSVWorker::writeCSV(string filename)
 	if (os.is_open())
 	{
 		os << "YYYY.MM.DD hh:mm" << "RADAR" << "FMTS" << "TIME" << "H" << "KN04CODE" << "D" << "MINEL" << "A10EL" << "Q" << "GT" << "MT" << "IZT" << "WD" << "WS" << "SPKS" << NEWLINE;
+		
+		
 		map<LaunchTime, LaunchParameters>::iterator it1 = monthDataDay.begin();
 		map<LaunchTime, LaunchParameters>::iterator it2 = monthDataNight.begin();
 		
@@ -164,6 +197,12 @@ void CSVWorker::writeCSV(string filename)
 				writeLaunch(os, (*it1).first, (*it1).second);
 				it1++;
 			}
+		}
+		it1 = monthData.begin();
+		while (it1 != monthData.end())
+		{
+			writeLaunch(os, (*it1).first, (*it1).second);
+			it1++;
 		}
 	}
 	os.flush();
