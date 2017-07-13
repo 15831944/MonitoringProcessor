@@ -27,6 +27,7 @@ public:
 	// Тип - 0 - старый.
 	void setOperationType(int t);
 private:
+	string toLower(string data);
 	int type;
 	LaunchTime parseTime(string datetime);
 	map<LaunchTime, LaunchParameters> monthDataDay;

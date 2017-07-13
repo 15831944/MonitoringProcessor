@@ -30,6 +30,7 @@ public:
 	TAE3 tDa;
 	int KN04Code;
 	int infozond;
+	int longitude;
 private:
 	LaunchTime mLt;
 	map<string, string> mData;

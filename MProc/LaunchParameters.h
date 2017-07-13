@@ -121,6 +121,7 @@ struct LaunchParameters
 	string filesAvail;
 	vector<string> strparams;
 	vector<double> params;
+	int longitude;
 };
 
 #endif

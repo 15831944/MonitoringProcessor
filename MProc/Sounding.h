@@ -16,6 +16,7 @@ public:
 		mRawData = ".RAW";
 		infozond1 = infozond2 = 0;
 		type = 0;
+		longitude = 0;
 	};
 	~Sounding()
 	{
@@ -53,8 +54,10 @@ public:
 	void processKN04File();
 	void processTAE3File();
 	void processINFOFile();
+	int getLongitude();
 	map<StringLaunchTime, DayFormats*> mAllData; //для нового режима функционирования
 private:
+	int longitude;
 	int type;
 	RAWData rDaM;  /*morning*/
 	RAWData rDaN; /* night */

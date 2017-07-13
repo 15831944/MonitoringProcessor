@@ -1,4 +1,5 @@
 #include "CSVWorker.h"
+#include "LocalTimeCheck.h"
 
 void CSVWorker::addLaunch(int dayornight, LaunchTime lTime, LaunchParameters lParams)
 {
@@ -17,6 +18,13 @@ void CSVWorker::addLaunch(int dayornight, LaunchTime lTime, LaunchParameters lPa
 		monthDataNight[lTime] = lParams;
 }
 
+string CSVWorker::toLower(string dat)
+{
+	string data = dat;
+	std::transform(data.begin(), data.end(), data.begin(), ::tolower);
+	return data;
+}
+
 void CSVWorker::addLaunch(LaunchTime lTime, LaunchParameters lParams)
 {
 	LaunchTime lt = lTime;
@@ -27,7 +35,45 @@ void CSVWorker::addLaunch(LaunchTime lTime, LaunchParameters lParams)
 		monthDataNight[lt] = lParams;
 	else
 	{
-		monthData[lt] = lParams;
+		//ѕуск отнести куда-либо сложно.
+		//—юда ещЄ можно добавить проверку на местное врем€.
+		tm startTime;
+		memset(&startTime, 0, sizeof(tm));
+		startTime.tm_year = lt.tm_year-1900;
+		startTime.tm_mon = lt.tm_mon;
+		startTime.tm_mday = lt.tm_day;
+		startTime.tm_hour = lt.tm_hour;
+		startTime.tm_min = lt.tm_min;
+		int checkResult = checkLocalTime(startTime, lParams.longitude);
+		tm* gmt;
+		gmt = getGMTFromLocal(startTime, lParams.longitude);
+		switch (checkResult)
+		{
+		case 1:
+			lt.tm_min = gmt->tm_min;
+			lt.tm_hour = gmt->tm_hour;
+			lt.tm_day=gmt->tm_mday;
+			lt.tm_mon = gmt->tm_mon;
+			lt.tm_year = gmt->tm_year;
+			lParams.radarCode = toLower(lParams.radarCode);
+			monthDataNight[lt] = lParams;
+			break;
+		case 2:
+			lt.tm_min = gmt->tm_min;
+			lt.tm_hour = gmt->tm_hour;
+			lt.tm_day = gmt->tm_mday;
+			lt.tm_mon = gmt->tm_mon;
+			lt.tm_year = gmt->tm_year;
+			lParams.radarCode = toLower(lParams.radarCode);
+			monthDataDay[lt] = lParams;
+			break;
+		case 0:
+		default:
+			lParams.radarCode += '?';
+			monthData[lt] = lParams;
+			break;
+		}
+		
 	}
 }
 

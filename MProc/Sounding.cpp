@@ -29,6 +29,11 @@ void Sounding::addData(string data, string format)
 	
 }
 
+int Sounding::getLongitude()
+{
+	return longitude;
+}
+
 bool Sounding::hasFormat(string format)
 {
 	if (!type)
@@ -209,6 +214,14 @@ void Sounding::processINFOFile()
 			{
 				mAllData[curLaunchTime]->infozond = zond_type;
 			}
+			//Найдём долготу станции(нужно для детектирования местного времени)
+			newl = infoFile.find("StationLongitude");
+			if (newl == string::npos)
+				return;
+			newl += string("StationLongitude").length()+2;
+			last_str = infoFile.substr(newl, infoFile.find('\n', newl) - newl);
+			
+			sscanf_s(last_str.c_str(), "%d", &longitude);
 		}
 	}
 	catch (...)

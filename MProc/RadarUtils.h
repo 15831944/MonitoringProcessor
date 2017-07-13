@@ -93,6 +93,7 @@ inline void push_back_params(LaunchParameters &l, Sounding s, vector<bool> setti
 			l.params.push_back(0.0f);
 		}
 	}
+	l.longitude = s.getLongitude();
 }
 
 int daysInMonth(int month, int year)
