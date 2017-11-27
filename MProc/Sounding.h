@@ -49,6 +49,9 @@ public:
 	float getMinTemperature(float H);
 	float getAverageWindDirection();
 	float getAverageWindSpeed();
+	float getSunHeight();
+	float getLandErrorHum();
+	float getLandErrorTemp();
 	int getAlt10Elevation();
 	void processRAWFile();
 	void processKN04File();

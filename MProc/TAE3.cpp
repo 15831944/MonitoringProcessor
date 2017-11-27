@@ -1,4 +1,7 @@
 #include "TAE3.h"
+#include <algorithm> 
+#include <cctype>
+#include <locale>
 
 TAE3::TAE3()
 {
@@ -8,14 +11,84 @@ TAE3::TAE3()
 	dcnt = 0;
 }
 
+static inline void ltrim(std::string &s) {
+	s.erase(s.begin(), std::find_if(s.begin(), s.end(), [](int ch) {
+		return !std::isspace(ch);
+	}));
+}
 
-void TAE3::addString(string str2)
+// trim from end (in place)
+static inline void rtrim(std::string &s) {
+	s.erase(std::find_if(s.rbegin(), s.rend(), [](int ch) {
+		return !std::isspace(ch);
+	}).base(), s.end());
+}
+
+static inline string clr_str(std::string s) {
+	
+	string res = "";
+	for (int i = 0; i != s.length(); i++)
+	{
+		if (((s[i] >= '0') && (s[i] <= '9')) || (s[i] == ' ') || (s[i] == '-') || (s[i] == '.') || (s[i] == '.'))
+		{
+			res += s[i];
+		}
+	}
+	return res;
+}
+
+vector<string> split(const string& str, const string& delim)
+{
+	vector<string> tokens;
+	size_t prev = 0, pos = 0;
+	do
+	{
+		pos = str.find(delim, prev);
+		if (pos == string::npos) pos = str.length();
+		string token = str.substr(prev, pos - prev);
+		rtrim(token);
+		ltrim(token);
+		if (!token.empty()) tokens.push_back(token);
+		prev = pos + delim.length();
+	} while (pos < str.length() && prev < str.length());
+	return tokens;
+}
+
+void TAE3::addString(string str)
+{
+	string str1 = str;
+	str1 = clr_str(str1);
+	rtrim(str1);
+	ltrim(str1);
+	vector<string> data = split(str1," ");
+	if (data.size() < 6)
+		return;
+	int V = atoi(data[5].c_str());
+	int D = atoi(data[4].c_str());
+	char d_digits[5];
+	float H = atof(data[0].c_str());
+	int Hi = (int)(H * 1000);
+	if ((Hi >= 3000) && (Hi <= 10000))
+	{
+		if ((D > 0) && (V > 0))
+		{
+			//Так вычисляется средний угол. См википедию.
+			sumcos += cos((float)D / 180 * 3.1415926535);
+			sumsin += sin((float)D / 180 * 3.1415926535);
+			avV += (float)V;
+			dcnt++;
+		}
+	}
+}
+
+void TAE3::addString_legacy(string str2)
 {
 	//string str1 = "ИП      1.340   850.0  -12.8  26    8    8   15.6\r";
 	try
 	{
 		string str1 = str2;
 		string len = "ИП      1.340   850.0  -12.8  26    8";
+		rtrim(str2);
 		if (len.length() > str2.length())
 			return;
 		//Найдём столбы с D,V и H.
@@ -83,6 +156,24 @@ void TAE3::addString(string str2)
 	{
 
 	}
+}
+
+void TAE3::addSunString(string sun)
+{
+	string s_sun = clr_str(sun);
+	sunh = atof(s_sun.c_str());
+}
+
+void TAE3::addTempErrorString(string terror)
+{
+	string s_terror = clr_str(terror);
+	terr = atof(s_terror.c_str());
+}
+
+void TAE3::addHumErrorString(string humerror)
+{
+	string s_hum = clr_str(humerror);
+	herr = atof(s_hum.c_str());
 }
 
 void TAE3::compute()

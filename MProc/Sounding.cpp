@@ -321,6 +321,28 @@ void Sounding::processTAE3File()
 			*/
 
 			//Ïðîïóñòèòü 9 ñòðîê
+			unsigned int hsun = tae3File.find("ÑÎËÍÖÀ");
+			unsigned int hum = tae3File.find("ÂËÀÆÍÎÑÒÈ");
+			unsigned int tmpr = tae3File.find("ÒÅÌÏÅÐÀÒÓÐÛ");
+			//Âûäåëèì ñòðîêó ñ "âûñîòîé ñîëíöà" è òä. ñîõðàíèì.
+			string sunstring="";
+			sunstring = tae3File.substr(hsun,tae3File.find('\n', hsun)-hsun);
+			hsun = sunstring.find("ÃÐÀÄ");
+			sunstring = sunstring.substr(0, hsun);
+			mAllData[curLaunchTime]->tDa.addSunString(sunstring);
+			
+			string tempstring = "";
+			tempstring = tae3File.substr(tmpr, tae3File.find('\n', tmpr) - tmpr);
+			tmpr = tempstring.find("ÃÐÀÄ");
+			tempstring = tempstring.substr(0, tmpr);
+			mAllData[curLaunchTime]->tDa.addTempErrorString(tempstring);
+
+			string humstring = "";
+			humstring = tae3File.substr(hum, tae3File.find('\n', hum) - hum);
+			hum = humstring.find("%");
+			humstring = humstring.substr(0, hum);
+			mAllData[curLaunchTime]->tDa.addHumErrorString(humstring);
+
 			unsigned int newl = tae3File.find('D');
 			newl = tae3File.find('\n', newl)+1;
 			/*for (int i = 0; i != 9; i++)
@@ -366,6 +388,42 @@ void Sounding::processTAE3File()
 		cout << "Error reading TAE3!" << endl;
 	}
 
+}
+
+float Sounding::getLandErrorHum()
+{
+	if (!type)
+	{
+		return 0;
+	}
+	else
+	{
+		return mAllData[curLaunchTime]->tDa.getHumError();
+	}
+}
+
+float Sounding::getLandErrorTemp()
+{
+	if (!type)
+	{
+		return 0;
+	}
+	else
+	{
+		return mAllData[curLaunchTime]->tDa.getTempError();
+	}
+}
+
+float Sounding::getSunHeight()
+{
+	if (!type)
+	{
+		return 0;
+	}
+	else
+	{
+		return mAllData[curLaunchTime]->tDa.getSunHeight();
+	}
 }
 
 int Sounding::getKN04Code()
@@ -431,7 +489,7 @@ float Sounding::getAverageWindDirection()
 		}
 		else
 		{
-			mAllData[curLaunchTime]->tDa.getAverageWindDirection();
+			return mAllData[curLaunchTime]->tDa.getAverageWindDirection();
 		}
 	}
 	catch (...)
@@ -457,7 +515,7 @@ float Sounding::getAverageWindSpeed()
 		}
 		else
 		{
-			mAllData[curLaunchTime]->tDa.getAverageWindSpeed();
+			return mAllData[curLaunchTime]->tDa.getAverageWindSpeed();
 		}
 	}
 	catch (...)

@@ -84,6 +84,15 @@ inline void push_back_params(LaunchParameters &l, Sounding s, vector<bool> setti
 			case 12:
 				l.params.push_back((double)s.getNumSpikes());
 				break;
+			case 13:
+				l.params.push_back((double)s.getSunHeight());
+				break;
+			case 14:
+				l.params.push_back((double)s.getLandErrorTemp());
+				break;
+			case 15:
+				l.params.push_back((double)s.getLandErrorHum());
+				break;
 			default:
 				break;
 			}

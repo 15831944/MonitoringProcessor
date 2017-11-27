@@ -9,7 +9,11 @@ public:
 	TAE3();
 	~TAE3(){};
 	void addString(string str);
+	void addString_legacy(string str);
 	void compute();
+	void addSunString(string sun);
+	void addTempErrorString(string terror);
+	void addHumErrorString(string humerror);
 	inline float getAverageWindDirection()
 	{
 		return avD;
@@ -18,11 +22,24 @@ public:
 	{
 		return avV;
 	}
+	inline float getHumError()
+	{
+		return herr;
+	}
+	inline float getTempError()
+	{
+		return terr;
+	}
+	inline float getSunHeight()
+	{
+		return sunh;
+	}
 private:
 	float sumcos;
 	float sumsin;
 	float avV;
 	float avD;
+	float sunh, terr, herr;
 	int dcnt;
 };
 

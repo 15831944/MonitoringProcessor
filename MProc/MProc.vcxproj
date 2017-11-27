@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="13.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -27,7 +27,7 @@
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
-    <PlatformToolset>v120_xp</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -85,25 +85,46 @@
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Calculator.h" />
     <ClInclude Include="CSVWorker.h" />
+    <ClInclude Include="DayFormats.h" />
+    <ClInclude Include="DispersionCalc.h" />
+    <ClInclude Include="DerivativeCalc.h" />
+    <ClInclude Include="ini.h" />
+    <ClInclude Include="INIReader.h" />
     <ClInclude Include="LaunchParameters.h" />
+    <ClInclude Include="MarkGenerator.h" />
     <ClInclude Include="minicsv.h" />
     <ClInclude Include="miniz.h" />
+    <ClInclude Include="MProcUtils.h" />
+    <ClInclude Include="RadarReader.h" />
+    <ClInclude Include="RadarUtils.h" />
     <ClInclude Include="RAWData.h" />
     <ClInclude Include="Sounding.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TAE3.h" />
     <ClInclude Include="targetver.h" />
     <ClInclude Include="zip_file.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Calculator.cpp" />
     <ClCompile Include="CSVWorker.cpp" />
+    <ClCompile Include="DayFormats.cpp" />
+    <ClCompile Include="DerivativeCalc.cpp" />
+    <ClCompile Include="DispersionCalc.cpp" />
+    <ClCompile Include="ini.c" />
+    <ClCompile Include="INIReader.cpp" />
+    <ClCompile Include="MarkGenerator.cpp" />
     <ClCompile Include="miniz.c" />
     <ClCompile Include="MProc.cpp" />
+    <ClCompile Include="RadarReader.cpp" />
+    <ClCompile Include="RAWData.cpp" />
     <ClCompile Include="Sounding.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TAE3.cpp" />
     <ClCompile Include="zip_file.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
