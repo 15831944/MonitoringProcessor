@@ -373,33 +373,44 @@ vector<string> RadarReader::radar_makeFormatStrings(vector<string> names)
 	if (mRadarNumber != 2)
 	{
 		ss << day << '.' << month << '.' << year;// << "-11.30";
+		string base_str = ss.str();
+		for (auto i : names)
+		{
+			string cur_name = (i);
+			size_t found = cur_name.find(base_str);
+			size_t dot_found = cur_name.find('.');
+			if (found != std::string::npos)
+			{
+				//Ќужно как то разделить строки например 1.03.2016 и 11.03.2016
+				if (found != 0) //если строка не ровно 1.03.2016******
+				{
+					if (i[found - 1] != '0') //то предшествующим символом должен быть ноль
+					{
+						if ((i[found - 1] != '\\') && (i[found - 1] != '/'))//но это не ноль, и не слеш.
+							continue;
+					}
+				}
+				result.push_back(i);
+			}
+		}
 	}
 	else
 	{
 		char date[10];
-		sprintf_s(date, "%04d%02d%02d", year, month, day);
+		sprintf_s(date, "%04d%02d%02d-", year, month, day);
 		ss << base << string(date);
-	}
-	string base_str = ss.str();
-	for (auto i : names)
-	{
-		string cur_name = (i);
-		size_t found = cur_name.find(base_str);
-		size_t dot_found = cur_name.find('.');
-		if (found != std::string::npos)
+		string base_str = ss.str();
+		for (auto i : names)
 		{
-			//Ќужно как то разделить строки например 1.03.2016 и 11.03.2016
-			if (found != 0) //если строка не ровно 1.03.2016******
+			string cur_name = (i);
+			size_t found = cur_name.find(base_str);
+			if (found != std::string::npos)
 			{
-				if (i[found - 1] != '0') //то предшествующим символом должен быть ноль
-				{
-					if ((i[found - 1] != '\\') && (i[found - 1] != '/'))//но это не ноль, и не слеш.
-						continue;
-				}
+				result.push_back(i);
 			}
-			result.push_back(i);
 		}
 	}
+	
 	return result;
 }
 

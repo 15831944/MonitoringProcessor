@@ -5,6 +5,8 @@
 
 using namespace mini;
 
+#define NEW_BEHAVIOR
+
 class CSVWorker
 {
 public:

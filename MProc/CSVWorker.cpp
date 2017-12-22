@@ -27,6 +27,7 @@ string CSVWorker::toLower(string dat)
 
 void CSVWorker::addLaunch(LaunchTime lTime, LaunchParameters lParams)
 {
+#ifndef NEW_BEHAVIOR
 	LaunchTime lt = lTime;
 	lt.parseLaunchTime();
 	if (lt.isDayLaunch())
@@ -75,6 +76,56 @@ void CSVWorker::addLaunch(LaunchTime lTime, LaunchParameters lParams)
 		}
 		
 	}
+#else
+	LaunchTime lt = lTime;
+	lt.parseLaunchTime();
+	if (lt.isDayLaunch())
+		monthData[lt] = lParams;
+	else if (lt.isNightLaunch())
+		monthData[lt] = lParams;
+	else
+	{
+		//ѕуск отнести куда-либо сложно.
+		//—юда ещЄ можно добавить проверку на местное врем€.
+		tm startTime;
+		memset(&startTime, 0, sizeof(tm));
+		startTime.tm_year = lt.tm_year - 1900;
+		startTime.tm_mon = lt.tm_mon;
+		startTime.tm_mday = lt.tm_day;
+		startTime.tm_hour = lt.tm_hour;
+		startTime.tm_min = lt.tm_min;
+		int checkResult = checkLocalTime(startTime, lParams.longitude);
+		tm* gmt;
+		gmt = getGMTFromLocal(startTime, lParams.longitude);
+		switch (checkResult)
+		{
+		case 1:
+			/*lt.tm_min = gmt->tm_min;
+			lt.tm_hour = gmt->tm_hour;
+			lt.tm_day = gmt->tm_mday;
+			lt.tm_mon = gmt->tm_mon;
+			lt.tm_year = gmt->tm_year;*/
+			lParams.radarCode = toLower(lParams.radarCode);
+			monthData[lt] = lParams;
+			break;
+		case 2:
+			/*lt.tm_min = gmt->tm_min;
+			lt.tm_hour = gmt->tm_hour;
+			lt.tm_day = gmt->tm_mday;
+			lt.tm_mon = gmt->tm_mon;
+			lt.tm_year = gmt->tm_year;*/
+			lParams.radarCode = toLower(lParams.radarCode);
+			monthData[lt] = lParams;
+			break;
+		case 0:
+		default:
+			lParams.radarCode += '?';
+			monthData[lt] = lParams;
+			break;
+		}
+
+	}
+#endif
 }
 
 bool CSVWorker::hasLaunch(LaunchTime lTime)
@@ -145,11 +196,11 @@ void CSVWorker::readCSV(string filename)
 
 			*/
 
-			if (lt.isDayLaunch())
+			/*if (lt.isDayLaunch())
 				monthDataDay[lt] = lp;
 			else if (lt.isNightLaunch())
 				monthDataNight[lt] = lp;
-			else
+			else*/
 				monthData[lt] = lp;
 		}
 	}

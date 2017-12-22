@@ -8,7 +8,11 @@ TAE3::TAE3()
 	sumcos = 0;
 	sumsin = 0;
 	avV = 0;
+	avD = 0;
 	dcnt = 0;
+	sunh = 0;
+	terr = 0;
+	herr = 0;
 }
 
 static inline void ltrim(std::string &s) {

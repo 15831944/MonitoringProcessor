@@ -8,11 +8,20 @@ using namespace std;
 class LaunchTime
 {
 public:
-	LaunchTime(){};
+	LaunchTime()
+	{
+		tm_min = -1;   // minutes of hour from 0 to 59
+		tm_hour = -1;  // hours of day from 0 to 24
+		tm_day = -1;  // day of month from 1 to 31
+		tm_mon = -1;   // month of year from 0 to 11
+		tm_year = -1;  // year since 1900
+	};
 	~LaunchTime(){};
 	string getAsString()
 	{ 
 		//yyyy.mm.dd hh:mm
+		if (tm_min == -1)
+			parseLaunchTime();
 		char stri[20];
 		sprintf_s(stri, "%04d.%02d.%02d %02d:%02d", tm_year, tm_mon,
 			tm_day, tm_hour, tm_min);
