@@ -51,6 +51,7 @@ string RadarReader::radar_readFormat(zip_file &file, string base)
 	string data;
 	string filename = base;
 	data = file.read(filename);
+	TestBin::Instance().markFileAsRead(filename);
 	return data;
 }
 

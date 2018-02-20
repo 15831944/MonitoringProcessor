@@ -20,6 +20,13 @@ void TestBin::generateReport()
 	os.set_delimiter(';', "$$");
 	if (os.is_open())
 	{
-
+		for (auto i : markedNames)
+		{
+			if (!i.second)
+			{
+				os << i.first << NEWLINE;
+			}
+		}
 	}
+	os.flush();
 }
