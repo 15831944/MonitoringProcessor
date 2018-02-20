@@ -17,6 +17,7 @@ public:
 	void addFiles(vector<string> names);
 	void markFileAsRead(string filename);
 	void generateReport();
+	void generateReport(string fname);
 private:
 	TestBin()
 	{

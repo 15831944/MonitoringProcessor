@@ -66,7 +66,7 @@ int _tmain(int argc, _TCHAR* argv[])
 			}
 		}
 		csvw->writeCSV(outfile);
-		TestBin::Instance().generateReport();
+		TestBin::Instance().generateReport("rep_"+outfile);
 	}
 	catch (...)
 	{
