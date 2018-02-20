@@ -402,6 +402,18 @@ float Sounding::getLandErrorHum()
 	}
 }
 
+float Sounding::getMaxHeightTAE3()
+{
+	if (!type)
+	{
+		return 0;
+	}
+	else
+	{
+		return mAllData[curLaunchTime]->tDa.getMaxHeight();
+	}
+}
+
 float Sounding::getLandErrorTemp()
 {
 	if (!type)

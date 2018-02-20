@@ -13,6 +13,7 @@ TAE3::TAE3()
 	sunh = 0;
 	terr = 0;
 	herr = 0;
+	maxH = 0;
 }
 
 static inline void ltrim(std::string &s) {
@@ -71,6 +72,8 @@ void TAE3::addString(string str)
 	int D = atoi(data[4].c_str());
 	char d_digits[5];
 	float H = atof(data[0].c_str());
+	if (maxH<H)
+		maxH = H;
 	int Hi = (int)(H * 1000);
 	if ((Hi >= 3000) && (Hi <= 10000))
 	{

@@ -52,6 +52,7 @@ public:
 	float getSunHeight();
 	float getLandErrorHum();
 	float getLandErrorTemp();
+	float getMaxHeightTAE3();
 	int getAlt10Elevation();
 	void processRAWFile();
 	void processKN04File();

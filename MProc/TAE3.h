@@ -34,11 +34,16 @@ public:
 	{
 		return sunh;
 	}
+	inline float getMaxHeight()
+	{
+		return maxH;
+	}
 private:
 	float sumcos;
 	float sumsin;
 	float avV;
 	float avD;
+	float maxH;
 	float sunh, terr, herr;
 	int dcnt;
 };

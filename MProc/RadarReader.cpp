@@ -528,12 +528,13 @@ void RadarReader::radar_processLaunch(Sounding &s)
 
 		int t1 = s.getRAWSoundingTime();
 		int t2 = s.getSoundingTime();
+		int h1 = (int)s.getMaxHeightTAE3();
 
 		mg.setSoundingTime(t2);
 
 		push_back_params(l, s, mSettings, error_str);
 
-		if (t1 || t2)
+		if (t1 || t2 || h1)
 			mCsvw->addLaunch(lt1, l);
 
 		printSoundingInformation(cnt, s);
