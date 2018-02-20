@@ -31,6 +31,8 @@ void RadarReader::initFromFile(string infile, string infile2)
 		base = base.substr(0, base.find_last_of('/')) + "/";
 	else
 		base = "";
+	vector<string> names = file.namelist();
+	TestBin::Instance().addFiles(names);
 	//file = fil;
 }
 

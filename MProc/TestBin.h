@@ -1,13 +1,9 @@
+#ifndef TESTBIN_H
 #define TESTBIN_H
 
 #include "stdafx.h"
-#include "DispersionCalc.h"
-#include "DerivativeCalc.h"
 
-#define MARKS_NUMBER 4
-#define DISPERSION_CALCULATORS 6
-
-#define CALCULATORS 12
+using namespace mini;
 
 class TestBin
 {
@@ -18,6 +14,9 @@ public:
 		static TestBin s;
 		return s;
 	}
+	void addFiles(vector<string> names);
+	void markFileAsRead(string filename);
+	void generateReport();
 private:
 	TestBin()
 	{
@@ -29,6 +28,9 @@ private:
 
 	TestBin(TestBin const&); // реализация не нужна
 	TestBin& operator= (TestBin const&);  // и тут
+
+	vector<string> mNames;
+	map<string, bool> markedNames;
 };
 
 #endif

@@ -2,6 +2,7 @@
 #include "zip_file.hpp"
 #include "CSVWorker.h"
 #include "Sounding.h"
+#include "TestBin.h"
 #ifndef RADARREADER_H
 #define RADARREADER_H
 
